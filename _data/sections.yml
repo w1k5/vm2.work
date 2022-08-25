@@ -1,0 +1,30 @@
+- name: Scientific Research
+  id: science-work
+  entries:
+   - title  : New York City's Real Estate & the Strength of a Name
+     date: May 2022
+     description: Empirical study focusing on the causal analysis of the relationship between property sale prices and the location of a property, accounting for the majority of the advantages relating to a given borough, quantifying the value of a borough.
+     url   : /scientific%20research/2022/05/22/strength-of-a-name.html
+   - title  : Tit-for-tat's Lack of Robustness Against Strategic Clients (Again)
+     description: Empirical study relying on a theoretical approach towards demonstrating tit-for-tat's lack of robustness against strategic clients-- simply, highlighting the differences between FairTorrent and BitTorrent.
+     date: May 2022
+     url   : /scientific%20research/2022/05/19/bittorrent
+
+- name: Home
+  id: home
+  greeting: Welcome!
+  info: I am Victoria Michalska and this is my online portfolio.<br>This site was made by me using the static site generator, Jekyll, to present samples of my research work in computer science and in art history, which can be found in the accompanying tabs above. Click the button below to be shown a timeline of my past work history.
+  button: Work Experience
+  button-link: /past-work-experience.html
+
+- name: Historical Research
+  id: historical-work
+  entries:
+   - title  : 'Not-China China'
+     date: December 17 2021
+     url   : '/historical%20research/2021/12/17/not-china-china.html'
+     description: In Jingdezhen, Jiangxi province (江西省, 景德鎮), a paint brushrest was found at some point in the 20th century. This research paper focuses on the visual manifestation of cultural exchange in this brushrest, functioning as a tangible reminder of the complexities of any nation&rsquo;s history.
+   - title  : Power &amp; The Perpetual in Washington Square Park
+     url   : '/historical%20research/2021/05/26/washington-square.html'
+     date: May 26, 2021
+     description: A case study of Washington Square Park and its monuments, considering its historical relevance, setting for the Washington Square Arch, and its still-popular role as a meeting place for the youth of New York City.

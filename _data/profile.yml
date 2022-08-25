@@ -1,0 +1,52 @@
+image: /images/me.png
+name: Victoria Michalska
+location: New York, NY
+description: creator of the Grape-Academic-Theme! Grape-Academic-Theme is a modification of the Grape-Theme by naye0ng, making it more suitable as an academic portfolio.
+experience: # Remove for hiding the experience section
+  - start: June 2022
+    experience : Graduate from Williams College
+    details:
+      - Double major in Computer Science/Art History, 3.4 GPA
+  - start: Summer 2021
+    experience : Data Analytics/Marketing Intern, IAC
+    details:
+      - Analyzed trends in audience retention for Care.com’s email marketing strategies using Amplitude
+      - Used Airtable’s API to create scripts in Java to organize Care.com’s Iterable campaigns
+      - Planned and organized A/B tests for marketing campaigns in Jira
+  - start: Summer 2019
+    experience : Front-end Dev and Marketing Assistant, Article22
+    details:
+      - Created and maintained Shopify blog
+      - Constructed automated mailing system in Klaviyo
+      - Designed advertisements for campaigns and products using Photoshop
+      - Analyzed and executed the production of campaign materials
+      - Assessed the success of media campaigns through marketing analytics
+  - start: September 2018
+    experience: Begin education at Williams College
+  - start: June 2018
+    experience: Graduate from The Brooklyn Latin School, 3.85 GPA
+interests: # Remove for hiding the interests section
+  - Interest 1
+  - Interest 2
+skills: # Remove for hiding the skills section
+  - skill: HTML5 & CSS
+    value: 85  # Percent value
+social:
+  email: vmichalska00@gmail.com
+  orcid:
+  scholar:
+  publons:
+  research_gate:
+  dblp:  # Full URL
+  semantic_scholar:  # Full URL
+  linkedin:  # Full URL
+  github: W1K5
+  gitlab:
+  bitbucket: 
+  google_plus:
+  twitter:
+  youtube:
+  facebook:
+  instagram:
+awards: # Remove for hiding the awards section
+  - "This is an award I got"

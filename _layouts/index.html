@@ -1,0 +1,56 @@
+---
+layout: default
+---
+<script src="https://kit.fontawesome.com/6c40b48a46.js" crossorigin="anonymous"></script>
+<div class="content">
+
+  {% include pagination-newer.html %}
+  {{ content }}
+  <div class="homecontent">
+    <div class="avatar" style="background-image: url({{ site.data.profile.image }})"></div>
+    <div class="details">
+      <h1 class="site-title">{{ site.data.profile.name }}</h1>
+      <p class="lead">{{ site.description }}</p>
+      <p><i class="fas fa-envelope"></i> <a href="mailto:{{ site.data.profile.social.email }}">{{ site.data.profile.social.email }}</a><br>
+        <i class="fa-solid fa-file"></i> <a target="_blank" href="\images\victoriamichalska_resume.pdf">Find my resume here</a><br>
+        <i class="fa-brands fa-github"></i> <a href="https://github.com/{{ site.data.profile.social.github }}" target="_blank">{{ site.data.profile.social.github }}</a><br>
+        <i class='fas fa-map-marker-alt'></i> {{ site.data.profile.location }}
+      </p>
+
+    </div>
+  </div>
+
+  <!-- HOME HIGHLIGHTS SECTION -->
+  <div class="layout">
+    {% for section in site.data.sections %}
+
+    {% if section.id == "home" %}
+    <input name="nav" type="radio" class="nav {{section.id}}-radio" id="{{section.id}}" checked="checked"/>
+    {% else %}
+    <input name="nav" type="radio" class="nav {{section.id}}-radio" id="{{section.id}}"/>
+    {% endif %}
+
+    <div class="slide {{section.id}}-slide">
+      <div class="slide-contents">
+        {% for specific in section.entries %}
+        <div>
+          <a href="{{specific.url}}"><h1 style="margin-bottom: 0;">{{specific.title}}</h1></a>
+          <p>{{ specific.date | date: "%b %Y" }}<br>
+          {{specific.description}}</p>
+        </div>
+        {% endfor %}
+        {% if section.id == "home" %}
+        <div style="text-align: center;">
+          <h1>{{ section.greeting }}</h1>
+          <p>{{ section.info }}</p>
+          <button type="button" onclick="window.location.href='{{ section.button-link }}';">{{ section.button }}</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <label class="nav" for="{{section.id}}">
+    <span>{{section.name}}</span>
+    </label>
+    {% endfor %}
+  </div>

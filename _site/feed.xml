@@ -1,0 +1,1333 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-08-23T22:25:05-04:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">vm2.work</title><subtitle>Recent graduate from Williams College with a double major in Computer Science and Art History</subtitle><entry><title type="html">New York City’s Real Estate &amp;amp; the Strength of a Name</title><link href="http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name.html" rel="alternate" type="text/html" title="New York City’s Real Estate &amp;amp; the Strength of a Name" /><published>2022-05-22T00:00:00-04:00</published><updated>2022-05-22T00:00:00-04:00</updated><id>http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name</id><content type="html" xml:base="http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name.html"><![CDATA[<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<p>The original paper can be found <a target="_blank" href="/images/strength-of-a-name/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/nyc-realestate">here</a>.</p>
+
+<h1 id="sec:intro">Introduction</h1>
+<p>In 2022, the value of the NYC housing market was estimated at $3.51 trillion, and it appears that the market is not expected to stop growing anytime soon. The idea that real estate is a wise investment is a heavily debated topic, especially as young people grow more and more hesitant towards making such a purchase; but if one is to make it, it should be a wise one that functions more like an investment.</p>
+<p>New York City has been publishing large sets of property data on the internet since 2003. Online, the Annualized Sales Updates feature all sales since 2003, broken down by detail and by borough; furthermore, their website also features Rolling Sales Data, which features sales from the past 12 months. Property Valuation and Assessment Data can provide data on properties that haven’t been sold in the past 20 years.</p>
+<p>While it is widely known that the highest price per square foot can be found in Manhattan, I’d like to discover the value added exclusively by nature of a property being featured in a given borough, accounting for the most notable luxuries and pitfalls of living in a given area. Those qualities include but are not limited to: the quality of the transportation in area, the square footage of apartments in the borough, and the median income level of the surrounding area.</p>
+<p>The population data by zip code was gathered from data.betaNYC <span class="citation"></span>, income and demographic data was gathered from The U.S. Census Bureau <span class="citation"></span>, and the sales data is from NYC OpenData for the year 2021. Now the question is regarding where to buy: which location provides the most bang for your buck? In which of the boroughs would one be paying the most for exclusively the right to admit to living in a given borough? That will be my treatment variable. I hypothesize that Manhattan is the most overrated, and will result in the price of having a place in Manhattan (and only the value of being able to claim a location in Manhattan) being the highest.</p>
+<h1 id="sec:prelims">Preliminaries</h1>
+<h2 id="causality">Causality</h2>
+<p>A directed acyclic graph is a series of nodes connected by directed edges, which can be articulated as a touple consisting of the vertices and their connecting edges with independent errors equipped with the do-operator <span class="citation"></span>. Such a graph cannot contain a cycle. A causal model of a such a graph where each variable is considered a function of its parents and the independent error term, so the probability of a given variable <span class="math inline"><em>V</em></span> which can factorize via the following formula, where <span class="math inline">pa<sub>𝒢</sub>(<em>V</em><sub><em>i</em></sub>)</span> represents the parents of a variable <span class="math inline"><em>V</em><sub><em>i</em></sub></span> in <span class="math inline">𝒢</span>: <br /><span class="math display">$$\begin{aligned}
+p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{aligned}$$</span><br /> where <span class="math inline">pa<sub>𝒢</sub>(<em>V</em><sub><em>i</em></sub>)</span> is the parents of <span class="math inline"><em>V</em><sub><em>i</em></sub></span> in <span class="math inline">𝒢.</span> Within the context of the causal model, <span class="math inline">pa<sub>𝒢</sub>(<em>V</em><sub><em>i</em></sub>)→<em>V</em><sub><em>i</em></sub></span> can be understood as <span class="math inline">pa<sub>𝒢</sub>(<em>V</em><sub><em>i</em></sub>)</span> is the direct cause of <span class="math inline"><em>V</em><sub><em>i</em></sub></span>.</p>
+<h2 id="sec:backdoor">ACE &amp; Backdoor Adjustment</h2>
+<p>The aim of this paper will be to find the average causal effect (ACE) of a variable <span class="math inline"><em>a</em></span> on an outcome <span class="math inline"><em>Y</em></span>; ACE is most efficiently defined as the difference between the expected value of the outcome when the variable is present versus when it is not. There are multiple methods of finding the ACE, including (augmented) inverse probability weighting, instrumental variables, or front-door adjustment. None of these other methods were used because backdoor adjustment efficiently blocks spurious correlations; given the number of variables included in this experiment, and their plausible interconnections, this is essential in order to maintain faithfulness.</p>
+<p>Backdoor adjustment requires a valid set that blocks any paths from the treatment to the variable, ignoring the directionality of the edges. This set allows for the following formula to be true and provides the average causal effect according to backdoor adjustment criterion:</p>
+<p><br /><span class="math display">∑<sub><em>Z</em></sub><em>p</em>(<em>Z</em>)×𝔼[<em>Y</em> ∣ <em>A</em> = <em>a</em>, <em>Z</em>]</span><br /></p>
+<p>Which can be articulated as the average difference between the expected value of the outcome variable given that it is set to 1 versus when it is set to 0. The formula is used in <code>backdoor.py</code>, where <span class="math inline"><em>n</em></span> is the number of entries, <span class="math inline"><em>Y</em></span> is the outcome variable, and <span class="math inline"><em>a</em></span> is the treatment when it is set to 1, and <span class="math inline"><em>a</em>′</span> is the treatment when it is set to 0.</p>
+<p><br /><span class="math display">$$\hat{ACE} = \frac{1}{n}\sum_{i=1}^n (\hat{Y_i(a)}-\hat{Y_i(a')})$$</span><br /></p>
+<p>Conditional independences in <span class="math inline"><em>p</em>(<em>V</em>)</span> can be read off from the DAG via d-separation, i.e., <span class="math inline">(X &#x2AEB; Y | Z)<sub>d-sep</sub> &#8658; (X &#x2AEB; Y | Z)<sub>in p(V)</sub>.</span> This can be used in order to find a valid backdoor adjustment set; however, this requires the creation of and valid use of a DAG, as described above.</p>
+<p>While backdoor adjustment does prevent the emphasises towards spurious correlation, the one major issue with it is the associated linearity assumption: this may yield inaccurate conclusions regarding the relationship between variables created by the model.</p>
+<h2 id="bootstrapping">Bootstrapping</h2>
+<p>In order to create a slightly more robust result for a limited data set, a method called bootstrapping may be used: it is a technique where a data set is sampled in order to manufacture more data, having calculated the corresponding probabilities. In the context of this paper, random resampling will be used in order to increase the quantity of data points featured in the calculation of the backdoor adjustment-based ACE.</p>
+<h2 id="tetrad">Tetrad</h2>
+<p>A tool for causal discovery that I will be using in order to find a directed acyclic graph that I could use in order to test the relationship between my treatment variables and the sale price of the properties on average. Given that my data is not from a randomized control set, Greedy Equivalence Search (GES) will be run on my data in order to find possible causal structures in my data. GES is a score-based method for learning DAGs <span class="citation"></span>, assuming that there are no unmeasured confounders in my data. This seems to be a vaguely reasonable assumption given the quantity of different variables included in my data set. The particular version used in Tetrad is the Fast Greedy Equivalence Search (FGES), which is optimized for parallel processing, allowing for the computations to be much faster for the 31,488 entries that I have in my data set, as described in <span class="citation"></span>.</p>
+<h2 id="fcit">FCIT</h2>
+<p>The Fast Conditional Independence Test is a nonparametric conditional independence test, good for testing the presence of edges between two variables: when the result is higher than a given alpha value, then the presence of the edge is questionable. It bases its approach on that when P(X | Y, Z) does not equal P(X | Y ), including Z can improve predictions. Instead of assuming a linear assumption, this is the assumption they make regarding their predictions. The process uses a decision tree regression to predict an outcome under two different circumstances: one where only the some non-treatment variable is given and one where the treatment and the non-treatment variable are given. It then returns a p-value that compares the accuracy of the relationship in the context of the data, versus the null hypothesis.<span class="citation"></span> This, unlike FGES and normal backdoor adjustment is not linear.</p>
+<h1 id="sec:methods">Methods</h1>
+<h2 id="data-collection">Data Collection</h2>
+<p>My primary source for the property sales from the past 12 months in New York City can be found in from <span class="citation"></span>. However, this inspired further inquiries regarding the area, not only the properties and residences themselves: this paper is focusing in the role of the name, not necessarily the traits. Therefore, I started to gather data from multiple different sources, and ended up with a conglomeration of five different courses for my data sets. The quantity of subways was found in <span class="citation"></span>, the population densities by zip code were found on <span class="citation"></span>, and the average income for a given area was found in <span class="citation"></span>, and the racial demographics were found in <span class="citation"></span>. Given that there are multiple different ways of politically dividing the regions of the location (neighborhood, borough, block, zip code), I wanted to have a degree of specificity that would encompass all of the variety present in a given borough (which is the treatment variable of this experiment), but was still reasonable and accessible and wouldn’t introduce excessive variance in the data. The U.S. Census Bureau features robust filters on their website, and using that feature, I was able to categorize the average income and racial demographics by zip code and use that for processing.</p>
+<h2 id="data-pre-processing-and-cleaning">Data Pre-processing and Cleaning</h2>
+<p>Because this data is not collected from a randomized control trial, backdoor adjustment is a reasonable option to be used to adjust for confounding variables. My data was cleaned and organized in such a way so that for each given property collected from the 2021 New York City Sales Data, there were corresponding properties, based off the zip-code of the address listed with the property. After all of the data was processed, the listed variables were included for each of the properties:</p>
+<ol><li><p><strong>SALE_PRICE</strong>: The price a given property was sold at.</p></li><li><p><strong>ELEVATOR</strong>: A binary variable marking presence of an elevator in the property.</p></li><li><p><strong>RESIDENTIAL_UNITS</strong>: The number of residential units in the property.</p></li><li><p><strong>COMMERCIAL_UNITS</strong>: The number of commercial units in the property.</p></li><li><p><strong>LAND_SQUARE_FEET</strong>: The number of square feet on the property.</p></li><li><p><strong>SERVICES_COUNT</strong>: The number of subway lines that run through the subway stops in the neighborhood.</p></li><li><p><strong>COOP</strong>: Binary variable describing whether or not the property is in a co-op.</p></li><li><p><strong>CONDO</strong>: Binary variable describing whether or not the property is a condo.</p></li><li><p><strong>FAMILY_DWELLING</strong>: Binary variable describing whether or not the property is a house, rather than an apartment.</p></li><li><p><strong>MEDIAN_INCOME</strong>: The estimated median income in the property’s zip code.</p></li><li><p><strong>POPULATION_DENSITY</strong>: The population density of the property’s zip code.</p></li><li><p><strong>PERCENT_WHITE</strong>: The percent of white people in the property’s zip code.</p></li><li><p><strong>STATEN_ISLAND</strong>: Binary variable indicating whether or not the location is in Staten Island.</p></li><li><p><strong>BRONX</strong>: Binary variable indicating whether or not the location is located in the Bronx.</p></li><li><p><strong>MANHATTAN</strong>: Binary variable indicating whether or not the location is located in Manhattan.</p></li><li><p><strong>QUEENS</strong>: Binary variable indicating whether or not the location is located in Queens.</p></li><li><p><strong>BROOKLYN</strong>: Binary variable indicating whether or not the location is located in Brooklyn.</p></li></ol>
+<h2 id="graph-elicitation">Graph Elicitation</h2>
+<p>Regarding the parameters in Tetrad, the maximum degree of the graph was assigned to be 10 because of the already high quantity of variables involved with this data set. The algorithm was parallelized in order to improve processing times even further, and in order to increase the robustness of the algorithm, 20 bootstraps were featured.</p>
+<p>Considering the binary nature of my treatment variables, I will be able to run backdoor adjustment on my DAG (which has been generated from Tetrad) in order to find the ACE of the property being in a given borough on the cost of the property.</p>
+<p>I will be featuring 5 treatment variables, which all affect one another directly: <strong>BRONX</strong>, <strong>BROOKLYN</strong>, <strong>MANHATTAN</strong>, <strong>STATEN_ISLAND</strong>, and <strong>QUEENS</strong>. Only one of these variables could be set to true at any one given time because a real estate property can only be in one given borough at any one time, and therefore should be a direct causal relationship between all of these variables– by being in Brooklyn, you are therefore in no other boroughs.</p>
+<h2 id="causal-discovery">Causal Discovery</h2>
+<p>As described in section ACE &amp; Backdoor Adjustment, I will use backdoor adjustment in order to calculate the relationship between my treatment and outcome variable. The code for backdoor adjustment was written up in Python3 and featured heavy use of <code>statsmodels.api}</code> in order to calculate a Gaussian model for the relationship between my treatment variables and the outcome. The code for this is featured in <code>backdoor.py</code>, in the function <code>backdoor_adjustment</code>. In order to compute the corresponding confidence intervals, 200 bootstraps were features in the <code>compute_confidence_intervals_backdoor</code> function, with an alpha value of 0.05 in order to assess the variability of the distribution of results found from the backdoor adjustment processing. This process was run in a for loop for each my treatment variables, adjusting the adjustment set as needed.</p>
+<h1 id="sec:results">Results</h1>
+<p>Having run a Greedy Equivalence Search in Tetrad, the graph featured in Figure 1 was found. This graph, while complex, can be used to find the backdoor adjustment set by grabbing all of the parents of the outcome variable, with the exception of the treatment variable being tested, whether it be <strong>BRONX</strong>, <strong>BROOKLYN</strong>, <strong>MANHATTAN</strong>, <strong>STATEN_ISLAND</strong>, and <strong>QUEENS</strong> in a given iteration.</p>
+<center><div class="figure"><img style="width: 70%" src="/images/strength-of-a-name/graphviz.png" alt="Graph found from Greedy Equivalence Search" /><h3>Figure 1</h3></div></center>
+<p>Given this graph, the parents and children of the <strong>SALE_PRICE</strong>– with the exception of the treatment variable being tested– will be used as the backdoor adjustment set for each of the treatment variables. This means that four of the boroughs will be included in the backdoor adjustment set, alongside <strong>PERCENT_WHITE</strong> and <strong>POPULATION_DENSITY</strong> Furthermore, the data yielding from the backdoor adjustment processes featured in <code>backdoor.py</code>, is presented in Figure 4.</p>
+<h3>Figure 2</h3>
+<table><thead><tr class="header"><th align="left">Treatment</th><th align="left">Average Causal Effect</th><th align="left">Confidence Interval</th></tr></thead><tbody><tr class="odd"><td align="left">BROOKLYN</td><td align="left">-1759368.766</td><td align="left">(-2204619.097, -1350677.114)</td></tr><tr class="even"><td align="left">STATEN_ISLAND</td><td align="left">-3242318.034</td><td align="left">(-3849001.805, -2750577.017)</td></tr><tr class="odd"><td align="left">BRONX</td><td align="left">-2124969.992</td><td align="left">(-2517757.840, -1777306.324)</td></tr><tr class="even"><td align="left">QUEENS</td><td align="left">-2376241.155</td><td align="left">(-2856924.173, -1857450.184)</td></tr><tr class="odd"><td align="left">MANHATTAN</td><td align="left">12704278.334</td><td align="left">(10508549.500, 15480349.762)</td></tr></tbody></table>
+<h1 id="sec:discussion">Discussion and Conclusion</h1>
+<p>The graph found from the Greedy Equivalence Search (Figure 1) did not feature edges between all of the treatment variables, which was expected, given that I didn’t allow for Tetrad to create unnecessarily complex graphs; while there was a relationship established in the DAG between all of the treatment variables, they are all directed edges. Such edges would make more sense if they were bidirected, considering that they are most certainly fully connected in both directions. However, as a result, the backdoor adjustment approach would have ended up inappropriate and would require changing.</p>
+<p>Regarding the average causal effect, the data is presented in Figure 4 and appears to present that all of the boroughs, especially when compared to Manhattan, yield negative affects to the sales price. This is even consistent regarding the confidence intervals. Furthermore, it appears that the borough with the lowest value is Staten Island, with Queens and Bronx in close competition due to their overlapping confidence intervals, then Brooklyn and Manhattan.</p>
+<h2 id="dealing-with-linearity">Dealing with Linearity</h2>
+<p>In my introduction, I mention that I assume linear relationships between all of the variables: this may be, in reality, inaccurate. The most notable example of this may be the connection between residential units: while a single apartment may be in high demand, a property that contains two residential units may be less desirable, resulting in a lower price. However, purchasing a whole building is efficient and more valuable, meaning that then purchasing more residential units is more valuable. There is no variable that accounts for that in my data.</p>
+<p>In order to somewhat deal with this linearity assumption, a machine learning version of the backdoor adjustment formula was written up, which used <code>RandomForestRegressor</code> in order to explore multiple possibilities regarding the likelihood of treatment variables being set to particular parameters. In <code>backdoor.py</code>, a function <code>backdoor_ML</code> is featured and then used to calculate the following ML based average causal affect. The results are featured in Figure 3.</p>
+<h3>Figure 3</h3>
+<table><thead><tr class="header"><th align="left">Treatment</th><th align="left">Average Causal Effect</th><th align="left">Confidence Interval</th></tr></thead><tbody><tr class="odd"><td align="left">BROOKLYN</td><td align="left">443004.316</td><td align="left">(11381.310, 1271096.375)</td></tr><tr class="even"><td align="left">STATEN_ISLAND</td><td align="left">-342082.386</td><td align="left">(-540805.409, -45889.266)</td></tr><tr class="odd"><td align="left">BRONX</td><td align="left">58722.958</td><td align="left">(-40573.154, 547565.306)</td></tr><tr class="even"><td align="left">QUEENS</td><td align="left">13004.852</td><td align="left">(-154845.842, 289796.614)</td></tr><tr class="odd"><td align="left">MANHATTAN</td><td align="left">16316418.597</td><td align="left">(10369625.148, 25390966.669)</td></tr></tbody></table>
+<p>The table reveals that when the relationships between my included variables aren’t assumed to be linear, Staten Island becomes the remaining borough that has a negative causal effect; however, given the confidence intervals that include 0, that being the intervals for Bronx and Queens, it is possible that in reality, there is no benefit of being able to say that a property is located in either of these two locations. And still, it appears that properties in Brooklyn and Manhattan have objective value, just due to the name, with Manhattan beating out Brooklyn by a rather large margin.</p>
+<h2 id="sensitivity-testing">Sensitivity Testing</h2>
+<p>This paper assumes that there directly exists an edge between the borough and the sale price. In order to ensure that this is actually true, I ran the FCIT test on the specific edges between the boroughs and the sale prices. This yielded the following results:</p>
+<ul><li><p>BROOKLYN HAS A FCIT RESULT OF 0.48312355531146034</p></li><li><p>MANHATTAN HAS A FCIT RESULT OF 0.9994838489001261</p></li><li><p>STATEN_ISLAND HAS A FCIT RESULT OF 0.0563579538762069</p></li><li><p>BRONX HAS A FCIT RESULT OF 0.5724756688589954</p></li><li><p>QUEENS HAS A FCIT RESULT OF 0.5649545577569158</p></li></ul>
+<p>Given my alpha value of 0.05, it appears that the only edge that could possibly exist between a borough and a sale price is the edge between Staten Island and the sale price– this makes sense given the persistently negative average causal affect identified by both backdoor adjustment and the ML backdoor adjustment approach. What is also of note is the very high result from the FCIT test regarding Manhattan: at nearly a value of 1, Manhattan value must be quantified by more than just the population density, median income, and similar features, such that the label of the name must not mean much at all when it comes to purchasing real estate properties.</p>
+<p>However, these results can also be accounted for due to the linear approach of the FGES algorithm used to make the graph earlier in the paper– given additional computational complexity, I suppose only Staten Island is the place that truly, actively sucks.</p>
+<h1>References</h1>
+<p>U.S. Census Bureau. American community survey: S1901 income in the past 12 months (in 2020 inflation-adjusted dollars), a. URL <a href="https://data.census.gov/cedsci/table?q=income&amp;g=1600000US3651000%248600000&amp;y=2020&amp;tid=ACSST5Y2020.S1901">https://data.census.gov/cedsci/table?q=income&amp;g=1600000US3651000%248600000&amp;y=2020&amp;tid=ACSST5Y2020.S1901</a>. [Online; Accessed 05.09.2021].</p>
+<p>U.S. Census Bureau. American community survey: B02001 race, 2020, b. URL <a href="https://data.census.gov/cedsci/table?q=race&amp;g=1600000US3651000%248600000&amp;y=2020&amp;tid=ACSDT5Y2020.B02001&amp;tp=false">https://data.census.gov/cedsci/table?q=race&amp;g=1600000US3651000%248600000&amp;y=2020&amp;tid=ACSDT5Y2020.B02001&amp;tp=false</a>. [Online; Accessed 05.09.2021].</p>
+<p>Krzysztof Chalupka, Pietro Perona, and Frederick Eberhardt. Fast conditional independence test for vector variables with large sample sizes, 2018. URL <a href="https://arxiv.org/abs/1804.02747">https://arxiv.org/abs/1804.02747</a>.</p>
+<p>David Maxwell Chickering. Optimal structure identification with greedy search. Journal of Machine Learning Research, 3:507&ndash;554, 2002. data.BetaNYC. New york city neighborhoods populations and density. URL <a href="https://data.beta.nyc/en/dataset/pediacities-nyc-neighborhoods/resource/7caac650-d082-4aea-9f9b-3681d568e8a5">https://data.beta.nyc/en/dataset/pediacities-nyc-neighborhoods/resource/7caac650-d082-4aea-9f9b-3681d568e8a5</a>. [Online; Accessed 05.09.2021].</p>
+<p>NYC Department of Finance. New york city sales data from may 2021 - april 2022. URL <a href="https://www1.nyc.gov/site/finance/taxes/property-rolling-sales-data.page">https://www1.nyc.gov/site/finance/taxes/property-rolling-sales-data</a>. [Online; Accessed 05.09.2021].</p>
+<p>Judea Pearl. Causality. Cambridge University Press, 2009.</p>
+<p>Joseph Ramsey, Madelyn Glymour, Ruben Sanchez-Romero, and Clark Glymour. A million variables and more: the fast greedy equivalence search algorithm for learning high-dimensional graphical causal models, with an application to functional magnetic resonance images. International Journal of Data Science and Analytics, 3(2):121&ndash;129, 2017.</p>
+<p>Wikipedia contributors. List of new york city subway stations, 2022. URL <a href="https://en.wikipedia.org/wiki/List_of_New_York_City_Subway_stations">https://en.wikipedia.org/wiki/List_of_New_York_City_Subway_stations</a>. [Online; Accessed 05.09.2021].</p>]]></content><author><name></name></author><category term="Scientific Research" /><summary type="html"><![CDATA[Empirical study focusing on the causal analysis of the relationship between property sale prices and the location of a property, accounting for the majority of the advantages relating to a given borough, quantifying the value of a borough.]]></summary></entry><entry><title type="html">Tit-for-tat’s Lack of Robustness Against Strategic Clients (Again)</title><link href="http://localhost:4000/scientific%20research/2022/05/19/bittorrent.html" rel="alternate" type="text/html" title="Tit-for-tat’s Lack of Robustness Against Strategic Clients (Again)" /><published>2022-05-19T00:00:00-04:00</published><updated>2022-05-19T00:00:00-04:00</updated><id>http://localhost:4000/scientific%20research/2022/05/19/bittorrent</id><content type="html" xml:base="http://localhost:4000/scientific%20research/2022/05/19/bittorrent.html"><![CDATA[<p>The original paper can be found <a target="_blank" href="/images/bittorrent/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/proving-bittorrent">here</a>.</p>
+
+<h1>Introduction</h1>
+<p>Peer-to-peer (P2P) networks are systems of interacting components with processing and receiving capacities, connected directly to other components without a centralized entity which controls the allocation of resources between peers. These networks exist in the banking industry, the electric power industry, as well as in the world of online file-sharing. This project will be engaging in an empirical study regarding different strategies for specific peers to utilize when engaging with their peers, with some theoretical attempts at explaining the results; in the implementation, there will be a focus on file-sharing systems.</p>
+<p>In the world of file-sharing, BitTorrent is the most common protocol. Its approach is primarily based off the idea of tit-for-tat, which is explained in depth in the preliminaries of this paper. It has been shown not to be robust; an alternative to this protocol is FairTorrent. It is more generous and forgiving than BitTorrent, meant to utilize the bandwidth that is wasted with BitTorrent when the protocol actively chooses to choke particular peers due to their behavior in prior rounds.</p>
+<p>In this project, a provided simulator written up in Python3 will be utilized in order to implement different agents. BitTorrent will be implemented in collaboration with FairTorrent in order to emphasize the respective strengths between the two protocols, and this knowledge is then used in order to create a similar protocol that may similarly exploit BitTorrent and/or FairTorrent in order to yield lower average download times for the given agent.</p>
+<h1>Preliminaries</h1>
+<p>P2P networks are a common method for recourse distribution; theoretically, these sorts of networks can be expressed as a repeated game, where uploading and downloading have their own respective utilities. This game resembles the prisoner&rsquo;s dilemma, pictured in Figure 1, where there are two options for each player: either the agent can cooperate (<em>C</em>) or dissent (<em>D</em>). In the context of this paper, assume that the benefit of receiving the file is 3 and the cost of uploading is 1. The __ symbols are representative of whatever move the given agent had ended up with as a result of the automata&rsquo;s processes regarding the opponent&rsquo;s moves.</p>
+<div><center><img style="width: 20rem;" src="/images/bittorrent/matrix.png" />
+<h3>Figure 1: Payoff Matrix for P2P Game</h3>
+</center></div>
+<p>This payoff matrix is constant between two peers, but the strategies which a given peer can use to move about this matrix can vary, especially given that upload bandwidth is limited for a given peer&ndash; meaning that the number of peers that a given agent can cooperate with in a given round is limited.</p>
+<p>One approach is tit-for-tat: a strategy which assumes corporation between two players from the start. In the rounds following, the given player will do what their opponent did in the following round. It can be represented as a push-down automata via the following diagram:</p>
+<div><center><img style="width: 20rem;" src="/images/bittorrent/dfa.png" />
+<h3>Figure 2: DFA for Tit-for-Tat</h3>
+</center></div>
+<h1>Related Work</h1>
+<p>This project was originally inspired by a paper by Khan, Waheed, and Saif, under the title, <em>BitTorrent for the Less Privileged</em>. It explored the quantity of exchanges and <em>unchokes</em> between different pairs of peers with bandwidths that fell under a uniform distribution. An unchoke, in this context, defined as the choice to upload to a given peer. Khan&rsquo;s paper created heatmaps that visualized the quantity of unchokes between different pairs of peers; given that these peers were of different bandwidths, those with lower bandwidths were often the last to finish downloading the appropriate file. This information highlighted the lack of bandwidth-based clustering from which the lower-bandwidth peers could have benefited by collaborating, and in order to address this, the authors of the paper created BitMate.</p>
+<p>While this project will not be focusing on bandwidths, it will be utilizing a similar visualization technique to break tit-for-tat&rsquo;s robustness for strategic players. By looking at the quantity and kind of exchanges in environments with different sets of agents, certain gaps may be addressed and then utilized to take advantage of tit-for-tat.</p>
+<h1>Background on Protocols</h1>
+<p>Both, BitTorrent and FairTorrent, which this project will be focusing on, have similar request processes: in order to prevent the bottlenecks that occur due to a given piece being the most limited in an environment, the agents will continually request the pieces with the highest rarity, randomly breaking ties.</p>
+<h2>BitTorrent</h2>
+<p>BitTorrent&rsquo;s upload process is its most fundamental component: it will only upload to peers who uploaded to them&ndash; in the implementation of it in the simulator, this &ldquo;past" will be considered to be only the most recent round. The peers that did not upload to them in the most recent round will be choked. When a peer is unchoked, then the given agent is uploading to that peer. A typical BitTorrent has four slots: at most, three of which are occupied by peers that had uploaded to them in the past, and a fourth, which is considered an <em>optimistic unchoke</em>. This involves the inclusion of an additional random peer to be unchoked in order to facilitate future uploading of that peer to other peers. The total upload bandwidth will then be split up evenly between the requests selected to be satisfied. This is an efficient method against peers that intend to download without uploading, which is empirically shown in the results.</p>
+<h2>FairTorrent</h2>
+<p>A major issue with BitTorrent is the wasted bandwidth involved with intentionally choking peers that hadn&rsquo;t uploaded to them in the prior round. In order to create a compromise between tit-for-tat and an efficient use of bandwidth, FairTorrent&rsquo;s algorithm was created. FairTorrent involves the maintenance of a deficit list, where all of the blocks uploaded from the peer to a different given peer are summed and then all of the blocks downloaded from that different given peer to the original peer are subtracted from that sum. This deficit list is then sorted and used by the agent in order to select a peer to whom they will upload: the peer with the lowest deficit will be uploaded to first&ndash; if the peer with the lowest deficit has not put in a request, then the peer with the following lowest deficit will be checked; this process will continue until all of the possible bandwidth is filled, or there are no more peers left. When an appropriate request is found, the entire requested piece (or the maximum bytes/blocks possible) will be uploaded to that peer. If there is bandwidth remaining, then another request will be picked up using the same process described earlier.</p>
+<h2>Freerider</h2>
+<p>Freerider is a protocol that explicitly does not upload to any peers. This lack of contribution on the part of this sort of protocol results in a detriment to the overall performance of the network in general by not taking advantage of the equal privileges given to the peers in the P2P network. Its request protocol functions by going through all of the peers and choosing the maximum possible number of random pieces that it still needs from a given peer, in hopes that the given peer will deliver. Tit-for-tat actively addresses this by avoiding uploading to peers that do not reciprocate downloads, making it depend on the <code>Seed</code>s for downloads, as seen in the results.</p>
+<h2>Seed</h2>
+<p>A <code>Seed</code> is a node in the network that holds the entirety of the original file, only uploading to its peers depending on its approach. Here, the <code>Seed</code> will be choosing random peers to upload to it, functioning exclusively altruistically.</p>
+<h1>Tit-for-tat&rsquo;s Robustness</h1>
+<p>BitTorrent has been shown not to be particularly robust to strategic peer behavior in the past with approaches more complex than Freerider (described in the protocol for Freerider), due to the implementation of clients like BitTyrant, which utilizes higher quantities of computation (involving calculating which peers have large reciprocation bandwidth, the marginal benefit of an additional peer which will outweigh the cost of reduced reciprocation probability from other peers, as well as calculating the upload contribution needed for a particular peer in order to continue its reciprocation) to exploit the altruism featured in the nuances of BitTorrent&rsquo;s implementation through the inclusion of optimistic unchokes and the even splitting of the bandwidth for BitTorrent&rsquo;s four unchoke slots, as described in the BitTorrent section of this paper. However, this is computationally heavy and not particularly accessible to less knowledgeable audiences. Therefore this paper will be attempting to prove tit-for-tat&rsquo;s lack of robustness against simpler clients.</p>
+<p>An alternative to BitTorrent when it comes to the implementation of tit-for-tat as a file-sharing protocol is FairTorrent, described in detail in the FairTorrent protocol. By not actively maintaining chokes but still preferring to upload to peers who have uploaded to the given agent, FairTorrent does establish a threat to peers who don&rsquo;t upload to it; however, because FairTorrent does acknowledge the full history, rather than just the most recent round, it can be considered more forgiving and should allow for greater collaboration between the peers in the long-term , given the limited upload bandwidth of the agents.</p>
+<h1>Methodology and Contributions</h1>
+<p>This project will be using a P2P file-exchange simulator run in Python3 in order to collect data. Original implementations of BitTorrent and FairTorrent were written up for the purposes of this experiment, alongside the creation of a function that creates a heatmap in order to visualize the sort of exchanges occurring throughout the duration of the experiment. Given the original P2P simulator, certain adjustments were necessary in order to ensure maximum randomization possible to prevent the presence of patterns developing in the results where there would be none in practice; this is specifically regarding the sorting of the peers alphabetically at certain points in the simulator and this being seen in the results. Afterwards, new functions had to be created in order to facilitate the presentation of data as heatmaps from the simulator, described below in the section titled Implementation. Other functions were created in addition to these, but these are the most integral ones to understanding how this experiment is run. In the context of this paper, these heatmaps will be displaying primarily the frequency of the number of unchokes, because the major focus of this paper is the quantity of collaboration occurring between peers, as inspired by the Khan paper mentioned in Related Work; however, the number of blocks exchanged may also be featured in the heatmaps when of relevance in the context of this paper.</p>
+<h2>Implementation</h2>
+<p>There are two original functions integral to creating the heatmaps necessary for this paper. They are the following:</p>
+<ul>
+<li>
+<p><strong>convertDictList(frequenciesDict)</strong> Featured in <code>util.py</code>, this function, given a dictionary where the keys are touples where the first element of the touple is the uploading agent and the second element of the touple is the downloading agent, and where the values are the frequency of the given exchange, will convert it into a list of lists where each of the lists contains the first element of the touple, the second element of the touple, and the corresponding frequency.</p>
+</li>
+<li>
+<p><strong>frequencyMap(frequenciesList, bandwidths)</strong> This takes a list of lists containing the following elements in this exact order: the uploading agent, the downloading agent, and the corresponding frequency. It then uses matplotlib in order to create a heatmap using ishow, representing those frequencies visually using a heatmap where darker squares represent a higher number of exchanges, with a corresponding frequency bar. Note that because a peer cannot upload and download from itself, there will be a white line along the z-axis of the heatmap.</p>
+</li>
+</ul>
+<p>A significant question regarding the approach of this experiment is manner of distribution of bandwidth: should it be uniformly distributed, or equally distributed? Because it is specifically the algorithm type that is being tested, all of the non-<code>Seed</code> peers will be given the same bandwidth: that bandwidth being calculated by finding the middle point between the minimum and maximum bandwidth assigned. The <code>Seed</code>s will all be assigned the maximum bandwidths.</p>
+<p>Regarding BitTorrent, as described in detail in the BitTorrent protocol, at round <em>i</em>, chokes were implemented specifically for peers that did not upload to them during around <em>i</em> &minus; 1, in contrast to the 6 most recent rounds, in attempt at get as close to the standard definition of tit-for-tat as possible in the context of P2P networks. Furthermore, a maximum of 4 unchoke slots are allowed for any one given BitTorrent, given that this is the standard.</p>
+<p>In the original FairTorrent paper, the authors had created an implementation focused on bytes, blocks, and pieces making up whole files: in the context of our simulator, there are only blocks and pieces. To translate the FairTorrent algorithm to the simulator, as many blocks as possible of a given piece will be uploaded when that piece is requested of the FairTorrent and that <code>Upload</code> object is chosen. The major parameters fed into the simulator are the following:</p>
+<ol>
+<li>
+<p><code>numPieces</code>: The number of pieces in the file to be downloaded.</p>
+</li>
+<li>
+<p><code>blocksPerPiece</code>: The number of blocks needed to be downloaded to finish a whole piece.</p>
+</li>
+<li>
+<p><code>minBw</code>: The minimum number of blocks possible for an agent to send to another agent in a single round.</p>
+</li>
+<li>
+<p><code>maxBw</code>: The maximum number of blocks possible for an agent to send to another agent in a single round.</p>
+</li>
+<li>
+<p><code>iters</code>: The number of iterations for the simulation to be run.</p>
+</li>
+<li>
+<p><code>maxRound</code>: The maximum number of rounds for the simulation to enact before moving on to the following iteration.</p>
+</li>
+<li>
+<p><code>Agent, count</code>: The type of agent (with its corresponding algorithm) and the number of such an agent. This can take multiple different agents and different counts.</p>
+</li>
+</ol>
+<p>Given that different quantities of competing peers yields different results, with higher agent counts yielding greater competition between peers, this should be held constant: the aim of the non-<code>Seed</code> peer count is between 9 and 10. In order to prevent our iterations for continuing for an excessive number of rounds, two <code>Seed</code>s will be included in each environment. All of the above listed parameters, including the sum of the number of agents will be held constant via the following input:</p>
+<pre><code> python3 sim.py --numPieces=128 --blocksPerPiece=16 --minBw=16 --maxBw=32
+ --maxRound=1000 --iters=32 Seed,2</code></pre>
+<h2>Results</h2>
+<h4>BitTorrent,9 Freerider,1</h4>
+<p>As pictured in Figure 3, BitTorrent is robust against Freeriders&ndash; positioned against 9 BitTorrents, the Freerider finished its download process last, ending at round 59.1 on average.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Avg. Completion Rounds</th>
+<th>Std. Deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BitTorrent2</td>
+<td>51.5</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>BitTorrent0</td>
+<td>51.7</td>
+<td>5.5</td>
+</tr>
+<tr>
+<td>BitTorrent4</td>
+<td>51.9</td>
+<td>4.8</td>
+</tr>
+<tr>
+<td>BitTorrent5</td>
+<td>52.1</td>
+<td>5.2</td>
+</tr>
+<tr>
+<td>BitTorrent7</td>
+<td>52.3</td>
+<td>5.2</td>
+</tr>
+<tr>
+<td>BitTorrent3</td>
+<td>52.6</td>
+<td>6.1</td>
+</tr>
+<tr>
+<td>BitTorrent1</td>
+<td>52.7</td>
+<td>5.5</td>
+</tr>
+<tr>
+<td>BitTorrent6</td>
+<td>52.8</td>
+<td>6.2</td>
+</tr>
+<tr>
+<td>BitTorrent8</td>
+<td>53.3</td>
+<td>6.2</td>
+</tr>
+<tr>
+<td>Freerider0</td>
+<td>60.0</td>
+<td>3.5</td>
+</tr>
+</tbody>
+</table>
+<center><h3>Figure 3: Completion Rounds for BitTorrent,9 Freerider,1</h3></center>
+<p>In Figure 4, a visual is provided to highlight the mutual transactions that occur between the BitTorrent, as seen by the darker blocks between them. The entirety of the Freerider row is white, due to its lack of uploading to any other peer; however, due to BitTorrent&rsquo;s optimistic unchokes, the Freerider does end up downloading from the BitTorrents as pictured by the grey squares pictured in the Freerider column, but not as often as the other BitTorrents end up downloading from their fellow BitTorrents, as seen by their darker shade. This difference highlights Freerider&rsquo;s dependence on the <code>Seed</code>, which is heavily constrained by its randomized approach and limited bandwidth.</p>
+<center>
+<div><img src="/images/bittorrent/bittorrent_Freerider.png" />
+<h3> Figure 4: Heatmap generated by BitTorrent,9 Freerider,1</h3>
+</div>
+</center>
+<h4>FairTorrent,9 Freerider,1</h4>
+<p>Figure 5 reveals similar results to those from the environment only featuring BitTorrent and Freerider, showing a strength of the tit-for-tat strategy. However, because of FairTorrent&rsquo;s more generous approach, the average completion rounds are substantially lower than that of the results between BitTorrent and Freerider, given that the last average completion round was 59.1 for BitTorrent and Freerider, and the last average completion round was 56.3 for FairTorrent and Freerider.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Avg. Completion Rounds</th>
+<th>Std. Deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FairTorrent5</td>
+<td>47.0</td>
+<td>5.4</td>
+</tr>
+<tr>
+<td>FairTorrent2</td>
+<td>47.2</td>
+<td>5.6</td>
+</tr>
+<tr>
+<td>FairTorrent6</td>
+<td>47.8</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>FairTorrent1</td>
+<td>48.1</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>FairTorrent8</td>
+<td>48.2</td>
+<td>6.5</td>
+</tr>
+<tr>
+<td>FairTorrent3</td>
+<td>48.6</td>
+<td>7.1</td>
+</tr>
+<tr>
+<td>FairTorrent7</td>
+<td>48.7</td>
+<td>7.6</td>
+</tr>
+<tr>
+<td>FairTorrent0</td>
+<td>48.9</td>
+<td>8.0</td>
+</tr>
+<tr>
+<td>FairTorrent4</td>
+<td>49.3</td>
+<td>6.1</td>
+</tr>
+<tr>
+<td>Freerider0</td>
+<td>56.3</td>
+<td>2.6</td>
+</tr>
+</tbody>
+</table>
+<center><h3>Figure 5: Completion Rounds for FairTorrent,9 Freerider,1</h3></center>
+<p>Maintaining that train of thought, FairTorrent&rsquo;s altruism is also shown in the heatmap for the environment, pictured in Figure 6. Because FairTorrent does always upload to at least one of the requests that is submitted to it, it is more inclined to upload to a Freerider than BitTorrent because of it&rsquo;s unability to actively choke its peers. This is present in the darker shade present from the FairTorrents to Freerider0 column (in comparison to the column present in the BitTorrent and Freerider environments). Furthermore, because of this lack of active choking and the longer-term approach to tit-for-tat, the unchokes pictured in the figure from FairTorrents to other FairTorrents are not as even or as consistent as the spread between BitTorrents and other BitTorrents seen in Figure 4. This is especially notable in the relationship between FairTorrent1 and FairTorrent2, being substantially lighter than the surrounding squares.</p>
+<center>
+<div><img src="/images/bittorrent/fairtorrent_Freerider.png" />
+<h3>Figure 6: Heatmap generated by FairTorrent,9 Freerider,1</h3>
+</div>
+</center>
+<h4>FairTorrent,5 BitTorrent,5</h4>
+<p>FairTorrent&rsquo;s altruism, in comparison to BitTorrent&rsquo;s altruism, which manifests as the optimistic unchokes and even division of bandwidth when it comes to uploads as described in the protocol for BitTorrent, appears to be much more efficient in regards to download completion time, as seen in Figure 7. What is also of note is that the table reveals that the standard deviation appears to be much greater for BitTorrent than FairTorrent, when the two are directly put up against each other.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Avg. Completion Rounds</th>
+<th>Std. Deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FairTorrent0</td>
+<td>45.4</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>FairTorrent4</td>
+<td>45.7</td>
+<td>4.1</td>
+</tr>
+<tr>
+<td>FairTorrent1</td>
+<td>46.1</td>
+<td>4.6</td>
+</tr>
+<tr>
+<td>FairTorrent2</td>
+<td>46.5</td>
+<td>5.8</td>
+</tr>
+<tr>
+<td>FairTorrent3</td>
+<td>46.6</td>
+<td>4.2</td>
+</tr>
+<tr>
+<td>BitTorrent2</td>
+<td>48.6</td>
+<td>8.5</td>
+</tr>
+<tr>
+<td>BitTorrent1</td>
+<td>48.8</td>
+<td>8.1</td>
+</tr>
+<tr>
+<td>BitTorrent4</td>
+<td>50.2</td>
+<td>7.0</td>
+</tr>
+<tr>
+<td>BitTorrent3</td>
+<td>50.8</td>
+<td>6.4</td>
+</tr>
+<tr>
+<td>BitTorrent0</td>
+<td>50.8</td>
+<td>7.9</td>
+</tr>
+</tbody>
+</table>
+<h3>Figure 7: Completion Rounds for FairTorrent,5 BitTorrent,5
+</h3>
+<p>When taking a look at the heatmap of unchokes, featured in Figure 8, it appears that the chart is split up into four quadrants: while the two different types of algorithms do exchange data with each other, it appears to be a much lesser degree than with agents that possess an algorithm of the same type. Like seen earlier, the quadrant of BitTorrents appear to be much more consistent with collaborating with all of the agents of their type, while FairTorrents also do aggressively collaborate with each other, although they do appear to choose random favorites whom they unchoke more often than others.</p>
+<div><center><img src="/images/bittorrent/bittorrent_fairtorrent.png" />
+<h3>Figure 8: Heatmap generated by FairTorrent,5 BitTorrent,5
+</h3>
+</center></div>
+<p>Due to this similar behavior, but Figure 7 still revealing that FairTorrent relatively consistently beat out BitTorrent in terms of completion time, it was shown that the upload protocol itself was notable: not only in how the peer to which to upload to was chosen, but also in the quantity of blocks that were chosen to be uploaded. This is revealed in Figure 9; while it looks deeply similar to Figure 8 in terms of shape, with both the top-left and bottom-right quadrant being darker than the other two, in Figure 9, the relative darkness of the BitTorrent to BitTorrent squares is much lighter than the FairTorrent to FairTorrent squares. Furthermore, it appears that FairTorrent was indeed more generous than BitTorrent in terms of cross-protocol uploads, given that it appears that the FairTorrent to BitTorrent quadrant appears to be on average darker than the BitTorrent to FairTorrent.</p>
+<center>
+<div><img src="/images/bittorrent/bittorrent_fairtorrent_BLOCKS.png" />
+<h3>Figure 9: Heatmap for Blocks Exchanged by FairTorrent,5 BitTorrent,5
+</h3></div>
+</center>
+<p>This reveals that FairTorrent&rsquo;s protocol regarding uploads allows for more focused collaboration, supporting the theoretical premise of Sherman, Nieh, and Stein&rsquo;s paper that FairTorrent is more effective in terms of download speeds than BitTorrent due to the ability to more efficiently utilize bandwidth space. From a theoretical standpoint it appears that by uploading entire pieces at a time when possible, FairTorrent aggressively incentivizes further cooperation with other FairTorrents.</p>
+<h4>FairTorrent&rsquo;s Approach to Collaboration</h4>
+<p>Based off the preceding results, it appears that the following theoretical analysis appears reasonable: FairTorrent&rsquo;s upload process differs from that of BitTorrent by uploading as much of a given piece as possible; if there is leftover bandwidth, then a following piece will begin to be uploaded for another peer (as described in the background on FairTorrent's protocol). When a FairTorrent <em>A</em> is working with only other FairTorrents, this yields more mutual collaboration by adjusting the deficit value of the peer with the highest deficit value (call this peer <em>B</em>); this is through uploading entire pieces consisting of a given set of blocks (or the maximum number of blocks given a set bandwidth&ndash; whichever is smaller), the deficit value from the perspective of peer <em>B</em> regarding peer <em>A</em> as a result will also decrease, resulting in <em>A</em> moving down the deficit list for peer <em>B</em>, making <em>A</em> more likely to be the recipient of an upload when they put in a request in a future round.</p>
+<h1>AngwyTorrent</h1>
+<h2>Rationale</h2>
+<p>Based off the results, FairTorrent appears to be a more efficient method of implementing tit-for-tat in terms of working in swarms and functioning against Freeriders. However, there is a question regarding whether or not there is a simpler way to break the robustness of tit-for-tat. For the final section of this paper, a strategy will be implemented that will intentionally attempt to mirror the tit-for-tat in its opposite. This method will be theoretically touched on and then empirically explored, and its related automata is pictured as the following:</p>
+<center>
+<div><img style="width: 20rem;" src="/images/bittorrent/dfa2.png" />
+<h3>Figure 10: Automata for AngwyTorrent
+</h3></div>
+</center>
+<p>This protocol will be called AngwyTorrent due to its, practically speaking, irrational approach. When a peer cooperates, the AngwyTorrent will transition to dissenting, if it isn&rsquo;t already&ndash; and when a peer dissents, the AngwyTorrent will transition to cooperating if it isn&rsquo;t already. Figure 10 features an automata that is identical to that of tit-for-tat, as articulated in the preliminaries of this paper, except each of the edges has the opposite action listed: when tit-for-tat features an edge that is (__,<em>D</em>), then the automata for AngwyTorrent features the same edge with (__,<em>C</em>); and when tit-for-tat features an edge that is (__,<em>C</em>), then the automata for AngwyTorrent features the same edge with (__,<em>D</em>). Both automatae start with cooperation; empirically, this due to the fact that when the deficit values for all of the peers are the same from the perspective of a given agent, then it does benefit to upload to anybody who requests it, because then bandwidth is more efficiently utilized, and theoretically, it ensures that tit-for-tat will cooperate in the following round in the context of BitTorrent and will cooperate in rounds far into the future in the context of FairTorrent.</p>
+<p>When running both automatae, assuming that both machines start at <em>C</em>, then the following progression should occur and then repeat itself once the process is completed, where the first item in the touple is the AngwyTorrent and the second item is a tit-for-tat agent:</p>
+<ol>
+<li>
+<p>(<em>C</em>, <em>C</em>)</p>
+</li>
+<li>
+<p>(<em>D</em>, <em>C</em>)</p>
+</li>
+<li>
+<p>(<em>D</em>, <em>D</em>)</p>
+</li>
+<li>
+<p>(<em>C</em>, <em>D</em>)</p>
+</li>
+</ol>
+<p>Figure 1 in the preliminaries features a pay-off matrix for a prisoner&rsquo;s dilemma, which is being used as a method of articulating a P2P network game in the context of this paper. Given the above possibilities, according to the pay-off matrix, assuming that either of the two players may choose to dissent as a result of focusing on an alternate peer with whom to exchange, in half of these scenarios, the AngwyTorrent will be at an advantage: in the remaining scenarios, the utility of the two players should be even, meaning that the tit-for-tat&rsquo;s strategy will only ever yield as much utility as the AngwyTorrent&rsquo;s strategy theoretically. Given this strategy, it would appear reasonable to conclude that when implemented, AngwyTorrent would yield quicker download times than either of the tit-for-tat strategies, given enough iterations.</p>
+<h4>Kill them with Kindness?</h4>
+<p>AngwyTorrent still resembles tit-for-tat, technically: given a change in action from the peer, AngwyTorrent retaliates accordingly. However, it punishes cooperation and rewards dissent, and through this, exploits actual tit-for-tat strategies from a theoretical standpoint. AngwyTorrent does not maximize the overall good of the environment by focusing on increasing the quantity of (<em>C</em>, <em>C</em>) events, which mutual tit-for-tat strategies like BitTorrent attempt to maintain with other agents of the same type; instead, AngwyTorrent attempts to maximize the amount of time that AngwyTorrent has benefited more than the opposing tit-for-tat strategy, and given that empirically, these protocols are functioning in an environment with more than two players and a limited quantity of bandwidth, it is inevitable that the process of the two communicating automatae by which the AngwyTorrent and tit-for-tat protocol are playing will be interrupted and AngwyTorrent will be forced to play <em>D</em> even when it isn&rsquo;t appropriate according to the automata.</p>
+<p>When such a process is interrupted, either the following round will return to stage 2&ndash; that being (<em>D</em>, <em>C</em>)&ndash; or stage 3&ndash; that being (<em>D</em>, <em>D</em>)&ndash; depending on which moment the process was in. From there, the process may resume to the following stage depending on when the AngwyTorrent returns to communicating with the peer, yielding greater benefit for the AngwyTorrent. Through this reasoning, AngwyTorrent should end up often completing the download process before any tit-for-tat strategy.</p>
+<h2>Implementation</h2>
+<p>The implementation of AngwyTorrent is identical to that of FairTorrent, with the exception of the upload function: rather than sorting the list by the lowest deficit, AngwyTorrent sorts it by the highest deficit, and then chooses to upload to the peers that way, traversing down the list.</p>
+<h2>Results</h2>
+<h4>BitTorrent vs. AngwyTorrent</h4>
+<p>Figure 11 reveals that AngwyTorrent does outperform BitTorrent. This is corresponds with the results found earlier; FairTorrent was quicker to finish than BitTorrent due to its upload process, which is also featured in AngwyTorrent. It also appears that the margins by which AngwyTorrent finishes first appears to be mildly greater than the margins by which FairTorrent beat BitTorrent. In Figure 7, the half range of the avg. completion rounds for the entirety of the environment is calculated as the following: (50.8 &minus; 45.4)/2 = 2.7, in contrast to the results in Figure 11, where the half range is (52.3 &minus; 44.9)/2 = 3.7. This greater half range for the average completion rounds between the two environment is marginal but may present an occasional strength of AngwyTorrent against FairTorrent, which has theoretical support described in the rationale for AngwyTorrent.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Avg. Completion Rounds</th>
+<th>Std. Deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AngwyTorrent1</td>
+<td>44.9</td>
+<td>5.9</td>
+</tr>
+<tr>
+<td>AngwyTorrent0</td>
+<td>45.3</td>
+<td>6.4</td>
+</tr>
+<tr>
+<td>AngwyTorrent2</td>
+<td>45.3</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>AngwyTorrent4</td>
+<td>45.4</td>
+<td>6.4</td>
+</tr>
+<tr>
+<td>AngwyTorrent3</td>
+<td>46.8</td>
+<td>6.2</td>
+</tr>
+<tr>
+<td>BitTorrent2</td>
+<td>48.4</td>
+<td>5.1</td>
+</tr>
+<tr>
+<td>BitTorrent0</td>
+<td>48.6</td>
+<td>5.9</td>
+</tr>
+<tr>
+<td>BitTorrent3</td>
+<td>50.7</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>BitTorrent4</td>
+<td>51.5</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>BitTorrent1</td>
+<td>52.3</td>
+<td>7.3</td>
+</tr>
+</tbody>
+</table>
+<center>
+<h3>Figure 11: Completion Rounds for AngwyTorrent,5 BitTorrent,5</h3>
+</center>
+<p>The heatmap featured in Figure 12, similar to the relationship of FairTorrents to other FairTorrents in Figure 8, the pairs which feature higher quantities of unchokes appear to be randomly assigned between pairs of AngwyTorrents. It does not appear that AngwyTorrent&rsquo;s presence has not substantially changed the degree of inter-protocol exchanges.</p>
+<center>
+<div><img src="/images/bittorrent/bittorrent_angwytorrent.png" />
+<h3>Figure 12: Heatmap generated by AngwyTorrent,5 BitTorrent,5</h3>
+</div>
+</center>
+<h4>FairTorrent vs. AngwyTorrent</h4>
+<p>In Figure&nbsp; 8, it appears that AngwyTorrent and FairTorrent are much closer competition than AngwyTorrent and BitTorrent, fitting the theoretical explanations regarding the strengths of AngwyTorrent; the presence of two <code>Seed</code>s results in a possible dependency of both types of protocol on the <code>Seed</code> which may be the final dictator for the rate of completion, and due to the <code>Seed</code>&rsquo;s random approach may result in certain anomalies. This is clearly seen in AngwyTorrent2 being the only AngwyTorrent that did not complete its download before any of the other FairTorrents on average, being surpassed in the figure by FairTorrent2 and FairTorrent3, albeit by very slim margins.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Avg. Completion Rounds</th>
+<th>Std. Deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AngwyTorrent0</td>
+<td>44.2</td>
+<td>5.9</td>
+</tr>
+<tr>
+<td>AngwyTorrent3</td>
+<td>44.4</td>
+<td>6.4</td>
+</tr>
+<tr>
+<td>AngwyTorrent1</td>
+<td>44.9</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>AngwyTorrent4</td>
+<td>44.9</td>
+<td>6.5</td>
+</tr>
+<tr>
+<td>FairTorrent2</td>
+<td>44.9</td>
+<td>4.4</td>
+</tr>
+<tr>
+<td>FairTorrent3</td>
+<td>45.8</td>
+<td>6.9</td>
+</tr>
+<tr>
+<td>AngwyTorrent2</td>
+<td>45.8</td>
+<td>6.9</td>
+</tr>
+<tr>
+<td>FairTorrent1</td>
+<td>46.3</td>
+<td>4.6</td>
+</tr>
+<tr>
+<td>FairTorrent4</td>
+<td>46.6</td>
+<td>4.9</td>
+</tr>
+<tr>
+<td>FairTorrent0</td>
+<td>46.8</td>
+<td>5.7</td>
+</tr>
+</tbody>
+</table>
+<center>
+<h3>Figure 13: Completion Rounds for AngwyTorrent,5 FairTorrent,5</h3>
+</center>
+<p>Furthermore, in Figure 14, there is a similar kind of randomness present in the AngwyTorrent to AngwyTorrent quadrant as there is in the the FairTorrent to FairTorrent quadrant. The two other quadrants appear to be relatively lighter than the cross-protocol quadrants present in the other figures in the results as well as Figure 12 specifically, revealing that AngwyTorrent&rsquo;s protocol stratifies the connections between itself and FairTorrent more than AngwyTorrent does with BitTorrent.</p>
+<center>
+<div><img src="/images/bittorrent/fairtorrent_angwytorrent.png" />
+<h3>Figure 14: Heatmap generated by AngwyTorrent,5 FairTorrent,5</h3>
+</div>
+</center>
+<h1>Conclusion</h1>
+<p>It appears that AngwyTorrent playing directly against tit-for-tat does indeed typically yield more efficient download times for AngwyTorrent, given that they are in a context where all of the players feature some sort of tit-for-tat strategy. In contrast to BitTorrent and FairTorrent, however, under no conditions would AngwyTorrent be able to prevent the success of Freeriders, given that Freeriders never upload, meaning that Freeriders will always have the highest deficit and will always recieve downloads from AngwyTorrent first. However, it&rsquo;s possible that by removing the Freerider from the environment as quickly as possible, it will allow the remaining nodes to finish their download processes more quickly, instead of forcing the Freerider to depend purely on the <code>Seed</code> for its downloads. This could theoretically yield a lower half-range for the average completion time for the given environment, potentially warranting future study. Another area of future work revolves around much more specifically quantifying the quantity of inter-protocol exchanges/unchokes and the quantity of intra-protocol exchanges/unchokes. While the heatmaps were helpful in visualizing the data, by quantifying these values, the results and analysis regarding these sorts of communications will be much more concrete and replaceable.</p>
+<p>A strength of FairTorrent established is its ability to upload entire pieces at a time: the bandwidths assigned to each of the peers in this experiment was 24, while each pieces was made up of 16 blocks. This allowed for FairTorrent to send a whole piece of the file during every round and was a notable strength of it&ndash; an aspect worth exploring as a result is the outcome of having pieces that are greater in size than the bandwidth assigned. This may decrease the significance of FairTorrent&rsquo;s strength as a protocol and may result in the distribution between unchokes to be different. Another thing worth exploring is running the same experiments with only a single <code>Seed</code>, rather than two. This may result in the <code>Seed</code> being less of a randomized crutch for the nodes such that the power of the AngwyTorrent is highlighted.</p>
+
+<h1>References</h1>
+<p>[1] Bram Cohen. Incentives build robustness in bittorrent. In Workshop on Economics of PeertoPeer systems , volume 6, 2003.</p>
+<p>[2] Umair Waheed Khan and Umar Saif. Bittorrent for the less privileged. In Proceedings of the 10th ACM Workshop on Hot Topics in Networks , HotNets-X, New York, NY, USA, 2011. Association for Computing Machinery.</p>
+<p>[3] Michael Piatek, Tomas Isdal, Thomas Anderson, Arvind Krishnamurthy, and Arun Venkataramani. Do incentives build robustness in bittorrent. In Proc. of NSDI , volume 7, 2007.</p>
+<p>[4] Alex Sherman, Jason Nieh, and Cliﬀord Stein. Fairtorrent: Bringing fairness to peer-to- peer systems. In Proceedings of the 5th International Conference on Emerging Networking Experiments and Technologies , CoNEXT &rsquo;09, page 133&ndash;144, New York, NY, USA, 2009. Association for Computing Machinery. 16</p>]]></content><author><name></name></author><category term="Scientific Research" /><summary type="html"><![CDATA[Empirical study relying on a theoretical approach towards demonstrating tit-for-tat's lack of robustness against strategic clients-- simply, highlighting the differences between FairTorrent and BitTorrent.]]></summary></entry><entry><title type="html">Not-China China</title><link href="http://localhost:4000/historical%20research/2021/12/17/not-china-china.html" rel="alternate" type="text/html" title="Not-China China" /><published>2021-12-17T00:00:00-05:00</published><updated>2021-12-17T00:00:00-05:00</updated><id>http://localhost:4000/historical%20research/2021/12/17/not-china-china</id><content type="html" xml:base="http://localhost:4000/historical%20research/2021/12/17/not-china-china.html"><![CDATA[<h1>INTRODUCTION</h1>
+<p>In Jingdezhen, Jiangxi province (江西省, 景德鎮), a paint brush rest (Figures 1 - 6)&nbsp;was found at some point in the 20th century. This is one of many identical brush rests found in the area, but these items are remarkably unique from most popular pieces of blue-and-white porcelain: different in use, form, and style than typical blue-and-white pieces seen in the art market today and popular in contemporary media, but also potentially the most potent and reflective of blue-and-white&rsquo;s beginnings as a medium and its historical significance.</p>
+<!--more-->
+<p>This paper will be focusing on the visual manifestation of cultural exchange in this brush rest. Following the theories of Alfred Gell, Nassos Papalexandrou, and influenced by Bonnie Cheng, the formal qualities of this item will be dissected and contextualized, acknowledging the complexities of China&rsquo;s history, especially in a time when the dynasties (even those not led by the Han Chinese, the majority ethnic group throughout most of Chinese history) are often presently considered to be strictly of Chinese history and rarely consider the implications of the intersections of different cultural groups that are very palpably present in that history. These external cultural impacts are manifested in this brush rest, and this paper will be highlighting the nuances of this very tangible, very real object as a reminder of the complexities of any nation&rsquo;s history.</p>
+<p>To start, the mere existence of a white porcelain item, such as the one that is the subject of this paper, with cobalt blue painted and glazed onto it is already revealing of a multitude of intersecting cultural groups with different values and beliefs. Up until recent years, blue-and-white porcelain (青花) was believed to not have been first created until the Yuan Dynasty. This, however, was found to be untrue, considering that shards of blue-and-white porcelain had been found recently that were compositionally dated to the Tang and Song dynasties.<sup><a href="#ftnt1">[1]</a></sup>&nbsp;Those blue-and-white Tang/Song ceramics had been created but destroyed, with only shards remaining, leaving a question as to what prevented the acceleration of the medium during those former dynasties.</p>
+<p>Often throughout Chinese history, local gazetteers described the locations of specific reject pits for the disposal of unwanted ceramic pieces, alongside descriptions of new commissions created for local and regional authorities,<sup><a href="#ftnt2">[2]</a></sup>&nbsp;and therefore, the decision to dismiss entire pieces due to a change in trends, led by the tastes of political authorities was not unfamiliar. During the writing of the Essential Criteria of Antiques, the first major book on Chinese art connoisseurship, written&nbsp;by Cao Zhao in 1388, Jingdezhen hadn&rsquo;t achieved the status that it would later, and the blue-and-whites were described as gaudy and unsophisticated.<sup><a href="#ftnt3">[3]</a></sup>&nbsp;It was only during the Yuan dynasty when blue-and-white began to reach higher status as a medium.</p>
+<h1>MONGOL CHANGES</h1>
+<p>The Yuan dynasty began with the Mongol takeover of Hangzhou, the Song capital of China. Kublai Khan, the grandson of Ghengis Khan, proclaimed himself emperor of China in the traditional Chinese style, and the Yuan dynasty officially began in 1271.</p>
+<p>The Mongols helped foster beneficial market conditions for the spread of blue-and-white ceramics,<sup><a href="#ftnt4">[4]</a></sup>&nbsp;destigmatizing the role of merchants and shipmakers. According to traditional Confuscian beliefs, those driven by materialism were viewed poorly, and this incentivized the import and export of goods from China, but under Mongol rule, this was overturned,<sup><a href="#ftnt5">[5]</a></sup>&nbsp;and an official Porcelain Bureau (瓷局) was established to organize and regulate manufacture by the Yuan dynasty.<sup><a href="#ftnt6">[6]</a></sup>&nbsp;This streamlined manufacturing process was one of the necessary milestones in order for Chinese porcelain as a medium (not exclusively blue-and-white) to reach the status that it eventually would claim, providing the infrastructure to maintain the process of product manufacture and distribution in China. Considering the dismissal of Confuscian beliefs necessary for this sort of development, the role of external cultural forces here is clear. The Mongol leadership even specifically streamlined the production of porcelain to the Kilns of Jingdezhen due to its access to kaolin, the material needed for porcelain production, with the Capital demanding the increased production of blue-and-white pieces for export and imperial use, respectfully.</p>
+<p>But why the sudden interest in blue-and-white porcelain when, in the past, it didn&rsquo;t appeal to the tastes of either Tang and Song dynasty leaders? Assuming the significance that Papalexandrou attributes to artists and original audiences, there is potential for past understandings and histories to be lurking in the back of Kublai Khan&rsquo;s and his subjects&rsquo; minds, resulting in a general affection for blue-and-white. The colors, blue and white, had specific mythological significance to the Mongols: some time after his Genghis Khan&rsquo;s death, The Secret History of the Yuan Dynasty&nbsp;(元朝秘史) was written, and in it, the ancestors of Genghis Khan were detailed, beginning at Borte Chino (Blue Wolf) and his wife, Gua Maral (White Doe). This sort of belief was popular among many of the steppe peoples and can be seen as in direct relationship with the Turkic origin myth in which it was believed that all Turkic people were descendants of the 10 original sons that were raised by a mother wolf; a similar belief was seen among the Uyghurs.<sup><a href="#ftnt7">[7]</a></sup>&nbsp;It is here, in its color and in its existence itself, where the role of Mongol beliefs and the vague connections to other steppe beliefs most fundamentally are reflected in the brush rest.</p>
+<h1>ISLAMIC INFLUENCE</h1>
+<p>Due to the influx of mercantile interest, encouraged by the Yuan Dynasty leadership, a large number of Arab merchants began arriving in China and amassing large amounts of wealth. On numerous pen holders from the time that look nearly identical to the one this paper is referring to,<sup><a href="#ftnt8">[8]</a></sup>&nbsp;Persian script was often featured on the items in a cartouche&mdash; in this instance, the words khāmah (قلم) &lsquo;pen&rsquo; is written on one side (Figure 2), and the other, dān (حامل) &lsquo;holder&rsquo; (Figure 4)&nbsp;, each in a diamond cartouche. The Persian calligraphy as decorative element is reminiscent of the use of calligraphy as ornament also seen in the work of Persian architecture and ceramics, an example pictured in Figure 7: this use of calligraphy as decor could be understood to have occurred initially in largely Muslim countries due the religion&rsquo;s belief in aniconism,<sup><a href="#ftnt9">[9]</a></sup>&nbsp;revealing another example of the hints of Muslim visual culture in this apparently Chinese item. Furthermore, a unique style of Ancient Persian script has been identified on the brush rest by academics, which has made the linguistic origins and influences of this item up for debate,<sup><a href="#ftnt10">[10]</a></sup>&nbsp;potentially reflecting the continuous shifting and mutual exchange that occurred between the Persian and Chinese communities, affecting even calligraphic styles of the given languages.</p>
+<p>In Islamic tiling, blue was a popular color, especially in the areas surrounding Persia, due to the location&rsquo;s proximity to abundant sources of the material; this resource would then be transported to China, providing the means for these merchants to amass great wealth and the means for feature the deep shade of blue that is well known in Chinese blue-and-white ceramics. However, as a result of the technological and economical differences of the western cultures, its use was fairly different from the use in Chinese blue-and-white porcelain. As an example, this can be seen in the Shah Mosque (Figure 8), a mosque located in Isfahan, Iran. This blue, however, was often featured in works in an opposite fashion to how it is observed in most Chinese porcelain items.</p>
+<p>Working with negative space was a popular technique in west Asian work: the space around the subject of the work is filled with color, rather than the subject itself being created using a paint or glaze. While this can also be seen in Chinese works, it is different in scale and execution, with the Chinese version working with a thin blue glaze, an example being shown in Figure 9, and the blue in west Asian artifacts being more concrete and stark, as seen in a detail of the Shah Mosque (Figure 7), mentioned earlier, which shows the hints as to what would make blue-and-white ceramics so unique in the eyes of western audiences.</p>
+<p>However, silhouette work, similar to the ones of the mushrooms on the paint brush holder,<sup><a href="#ftnt11">[11]</a></sup>&nbsp;had also been already present and popular in western parts of Asia; rather than blue and white, however, it was featured in blue and black, revealing the significance of color in the audiences&rsquo; relationship to the object. While similar in style and appearance, there was still a demand for Chinese blue-and-white in the west, considering the numerous samples of Chinese blue-and-white found in the west. However, as mentioned earlier, the shade of white porcelain created depended on the manner in which it was created, which varied from location to location. While artists in the western part of Asia created porcelain using stonepaste (also known as fritware), invented and recorded in a 1301 AD treatise by Abu&rsquo;I-Qasim, from a prominent Kashan family of potters, China was using a mixture of porcelain stone, or petuntse (白墩子), and kaolin.<sup><a href="#ftnt12">[12]</a></sup>, <sup><a href="#ftnt13">[13]</a></sup>&nbsp;Ceramics made from porcelain stone are generally much whiter in shade and much stronger than fritware.</p>
+<p>It is this difference that could potentially be reminiscent of the work of Alfred Gell regarding the technology of enchantment: the resulting change in a few shades of white, when comparing fritware to porcelain stone, could resemble what Gell&nbsp;would deem &ldquo;magic,&rdquo; revealing what would inspire those market forces that suggested that importing the deep blue of Persian cobalt into China and that exporting ceramics with the porcelain stone base made in China was worth the effort.</p>
+<h1>MING CONTROL</h1>
+<p>With the defeat of the Mongols, came the Ming dynasty, which initially began to drift away from the blue-and-white trend established by the Yuan dynasty. However, with the rise of the fifth Ming Emperor, Zhu Zhanji, also known as the Xuande Emperor, a particular fondness for blue-and-white was reestablished.</p>
+<p>At the same time, beginning from the late 14th century, &ldquo;reign marks&rdquo; began to be featured on the base of ceramics made at the time, which labeled the dynasty and emperor at the time of creation at the bottom of ceramic items. Beginning with Zhengzong during the Ming dynasty, reign marks began to appear on most artesian objects created at the time, identifying themselves specifically with the given emperor.<sup><a href="#ftnt14">[14]</a></sup>&nbsp;The object which is the focus of this paper bears the markings of the Zhengde Emperor from the Ming dynasty on the bottom, as seen on Figure 6, reading 大明正德年制, which most directly translates to, &ldquo;Made in the year of Zhengde of Ming Dynasty&rdquo;. The presence of the Persian calligraphy described earlier as well as the presence of the Chinese characters coexisting on the brush rest, in the context of Papalexandrou, reveals the acknowledgement of the relationship between the coexisting Chinese and Persian presence in the area.</p>
+<p>This acknowledgement is further strengthened in its potency when a connection to the Chinese imperial court is established: it has also been noted that the clearer and more defined the characters are on the bottom of the porcelain piece, the closer to the Emperor and his court the piece generally was.<sup><a href="#ftnt15">[15]</a></sup>,&nbsp;<sup><a href="#ftnt16">[16]</a></sup>&nbsp;The clarity and precision with which the reign marks on the brush rest that this paper is focusing on (Figure 6) were painted, still clear and crisp to this day, unlike other items whose marks were blurry and sloppily applied, reveals the strong relationship between the imperial courts and this item; this relationship, formally inspired by many Persian, Islamic, and Mongol beliefs, shows a direct acknowledgement of non-Han influences by the supposedly more &ldquo;traditional&rdquo; (i.e. Han) Ming dynasty, emphasizing the exchange that was and had occurred at the time. However, there was still a clear traditional Han Chinese basis in many formal aspects of the brush rest, other than the presence of those reign marks.</p>
+<p>While the arabesque on the brush holder has properties that are similar to that of west Asian arabesques, the images on it have also been identified as lingzhi scrolls, which hold Buddhist and Daoist significance. The first instance of lingzhi (灵芝) scrolls being recorded as having Daoist significance is in The Secret of Divine Immortals (神仙秘事), as it ascribes longevity to the mushrooms.<sup><a href="#ftnt17">[17]</a></sup>&nbsp;This iconographic significance of the mushrooms shows the direct connection established between the item and Daoist principles, which has been largely&nbsp;assumed to be associated with Han Chinese beliefs, showing something resembling a continuation of former Han beliefs..</p>
+<p>The shape and form in which this brush rest takes has generally been assumed to refer to the Five Sacred Mountains, but may also have circumstantial connection to Islam&mdash; the common religion among Persians at the time&mdash; as well. The traditional Confuscian belief held that there were Five Sacred Mountains in China, each representing one of the five elements.<sup><a href="#ftnt18">[18]</a></sup>&nbsp;This has been interpreted as primarily of Daoist significance, which ascribed different elements to each of the five mountains. However, regarding the high number of ethnically west Asian peoples present in the area, the five mountain peaks may also hint at a relationship to Islamic beliefs, which had grown popular in the area surrounding Persia, and may have been affecting China as a result of their presence; a major crux of Islamic belief is the Five Pillars of Islam.<sup><a href="#ftnt19">[19]</a></sup>&nbsp;These beliefs largely structure the faith and according to some art theory, such as that of Papalexandrou, may have appealed to the mental framework of a Muslim audience.</p>
+<p>Furthermore, there is evidence of a ruyi (如意) on the bottom of the brush holder. The ruyi is significant to Chinese tradition due to its prevalence throughout Chinese history; while it initially referred to the scepters wielded by emperors, generals, and other decision-makers from a variety of different cultures including those in India (making the origins of the ruyi itself ambiguous) for whatever intentions they wished for it to be be used for, eventually becoming a general symbol of court authority, it now specifically refers to the symbol often seen on top of these scepters, including the first one discovered in 1986, a ninth century scepter with the shape on top of it.<sup><a href="#ftnt20">[20]</a></sup>&nbsp;The use of such an image on the brush rest as decor, an ethnically vague symbol of authority, once again emphasizes the proximity of this item to power as well as the clear acknowledgement of the cultural intersections that resulted in this item&rsquo;s creation.</p>
+<h1>ITEM-SPECIFIC CONTEXT</h1>
+<p>Blue-and-white porcelain was perceived as luxurious, and was therefore often used for diplomatic gifts after the rise of their popularity. Objects made for export were often large serving plates, teapots, vases, covered jars and other household items not normally used in China, and meant to specifically appeal to audiences through their use function.<sup><a href="#ftnt21">[21]</a></sup>&nbsp;Objects meant for office use, such as this brush rest, would not have been typically made for export: however, the clear appeal to western Asian cultural groups as seen in this item implies that the western Asian population there was less temporal than typically assumed. Zhengde desk porcelains with Arabic and Persian markings have not been uncovered in the Topkapi Palace or the Ardebil shrine, where other porcelain items such as serving dishes and bowls with a Zhengde label and similar Persian and Arabic markings were found,<sup><a href="#ftnt22">[22]</a></sup>&nbsp;implying that these office objects were generally never treated like consumer goods, meant to be made, purchased, transported, and then resold again.</p>
+<p>The Zhengde emperor himself was notably interested in west Asian cultures from the very beginning of his reign: he dressed in the fashion of the cultures and had even instantiated a law forbidding the consumption of pork, sparking rumors of his conversion to Islam. The population of practicing Muslims had been exceptionally high in China at the time, in and around the area surrounding the capital, largely due to this great industrial process and its associated mercantile markets, with the resulting cultural exchanges permeating through the beliefs, behaviors, and aesthetic choices of the people in the time and place.<sup><a href="#ftnt23">[23]</a></sup>&nbsp;And yet, the Ming dynasty is still perceived nowadays as a return to the culture and style of the traditional Han Chinese beliefs and practices, when the items from the time are clearly, tangibly anything but that, with this brush rest functioning as an example. It was an item made for a group of people living in a specific time and place whose existence and presence depended on a process of cultural exchange occurring that facilitated the item&rsquo;s creation.</p>
+<h1>CONCLUSION</h1>
+<p>Bonnie Cheng claims that, when speaking of narratives of cultural exchange, it&rsquo;s important to note that the process is never one-sided and never complete, regardless of how those changes manifest themselves. While the work of Papalexandrou could be interpreted as a world of binaries due to his use of the word, &ldquo;hybrid,&rdquo; as it implies the presence of a unhybrid and potentially &ldquo;pure&rdquo; culture, his understanding of frameworks is significant: almost Freudian, Papalexandrou has detailed the significance of exposure in shaping the frameworks of both, of groups and of individuals. It is exposure that shapes understanding, and while the Yuan Dynasty may have fallen, the following one could not do anything to return those frameworks back to their original state before having been exposed to a 13th century version of what would be defined as &ldquo;multiculturalism&rdquo; today.</p>
+<p>The Ming dynasty, in most contemporary, generalized understandings of Chinese history, functions as primarily a foil to the Yuan dynasty. While this may appear reasonable on a superficial level, there are unacknowledged intricacies that result as a consequence and will always last, permeating throughout contemporary Chinese history. This would eventually result in &ldquo;China&rdquo; being another term for the porcelain that first became famous for being created in the geographic that is now referred to as China, without necessarily fitting all too many definitions and understandings as to what it means for something to be Chinese, leaving English-speakers with a potentially uniquely inhibited understanding of the medium, forever affecting their own frameworks.</p>
+<hr style="page-break-before: always; display: none;" />
+
+<center>
+<h1>Appendix of Images</h1>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image1.png" alt="Brush Rest with Persian Inscription&nbsp;(front)" /></p>
+<p>Figure 1: Brush Rest with Persian Inscription&nbsp;(front), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711215651&amp;usg=AOvVaw3rx6IEv-lA0OCmXc4EVC72">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image7.png" alt="Brush Rest with Persian Inscription&nbsp;(front calligraphy)" />Figure 2: Brush Rest with Persian Inscription&nbsp;(front calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711216555&amp;usg=AOvVaw3xpCM0Mi0l4HvfTxGOplgv">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image5.png" alt="Brush Rest with Persian Inscription&nbsp;(back)" />Figure 3: Brush Rest with Persian Inscription&nbsp;(back), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711217053&amp;usg=AOvVaw3BJ1vMGPmc2vxb6Dc8J4w_">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image6.png" alt="Brush Rest with Persian Inscription&nbsp;(back calligraphy)" /></p>
+<p>Figure 4: Brush Rest with Persian Inscription&nbsp;(back calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711217807&amp;usg=AOvVaw1vLW_3QbmvGam4YuT2H6Ma">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image2.png" alt="Brush Rest with Persian Inscription&nbsp;(bottom)" /></p>
+<p>Figure 5: Brush Rest with Persian Inscription&nbsp;(bottom), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711218648&amp;usg=AOvVaw0SbuOcQaIcPemVacLgrhBG">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image3.png" alt="Brush Rest with Persian Inscription&nbsp;(bottom calligraphy)" /></p>
+<p>Figure 6: Brush Rest with Persian Inscription&nbsp;(bottom calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711219302&amp;usg=AOvVaw1gADjnx42wWKTXObrjgwdZ">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image8.png" alt="Shah Mosque, Inscription on the wall of the Sheikh Lotf Allah Mosque" /></p>
+<p>Figure 7: Shah Mosque, Inscription on the wall of the Sheikh Lotf Allah Mosque, Isfahan, Iran, 1611-1629<br /><a href="https://www.google.com/url?q=https://en.wikipedia.org/wiki/File:Sheikh_Lotf_Allah_mosque_-_harem_wall_detail.jpg&amp;sa=D&amp;source=editors&amp;ust=1660623711220050&amp;usg=AOvVaw3ar3RVpnQDxSM-EiZe3NS6">https://en.wikipedia.org/wiki/File:Sheikh_Lotf_Allah_mosque_-_harem_wall_detail.jpg</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image9.png" alt="Shah Mosque, a 3D panorama of interior of the main prayer hall" /></p>
+<p>Figure 8: Shah Mosque, a 3D panorama of interior of the main prayer hall, Isfahan, Iran, 1611-1629<br /><a href="https://www.google.com/url?q=https://commons.wikimedia.org/wiki/File:Imam_Mosque_3Daa.jpg&amp;sa=D&amp;source=editors&amp;ust=1660623711220659&amp;usg=AOvVaw2Obi5d55gJ4cpiFLMbWtpO">https://commons.wikimedia.org/wiki/File:Imam_Mosque_3Daa.jpg</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="/images/not-china-china/image4.png" alt="" /></p>
+<p>Figure 9: Bowl with Dragons, Peony Scrolls, and Band of Lingzhi Mushrooms, 1522&ndash;1566<br /><a href="https://www.google.com/url?q=https://www.artic.edu/artworks/21282/bowl-with-dragons-peony-scrolls-and-band-of-lingzhi-mushrooms&amp;sa=D&amp;source=editors&amp;ust=1660623711221483&amp;usg=AOvVaw1nvVZ1w7GGraEdYK88lUqT">https://www.artic.edu/artworks/21282/bowl-with-dragons-peony-scrolls-and-band-of-lingzhi-mushrooms</a></p>
+</center>
+<hr style="page-break-before: always; display: none;" />
+
+<h1>Bibliography</h1>
+<p>Aigle, Denise. &ldquo;The Transformation of a Myth of Origins, Genghis Khan and Timur.&rdquo; Essay. In The Mongol Empire between Myth and Reality: Studies in Anthropological History, 124&ndash;27. Leiden, NL: Brill, 2014.</p>
+<p>Atasoy, Nurhan, Yanni Petsopoulos, and Julian Raby. &ldquo;V. The Making of an Iznik Pot.&rdquo; Essay. In Iznik: The Pottery of Ottoman Turkey, 50&ndash;51. London: Alexandria Press in association with Laurence King, 1994.</p>
+<p>Bagliani, Paravicini Agostino, Chiara Crisciani, and Dominic Steavu. &ldquo;The Marvelous Fungus and The Secret of Divine Immortals.&rdquo; Essay. In Longevity and Immortality: Europe, Islam, Asia, 353&ndash;80. Firenze, CA: Sismel, Edizioni del Galluzzo, 2018.</p>
+<p>Britannica, T. Editors of Encyclopaedia. &ldquo;Pillars of Islam.&rdquo; Encyclop&aelig;dia Britannica, March 13, 2020. https://www.britannica.com/topic/Pillars-of-Islam.</p>
+<p>Carswell, John. Blue and White: Chinese Porcelain around the World. London: British Museum Press, 2000.</p>
+<p>Davison, Gerald. The Handbook of Marks on Chinese Ceramics. London: Han-Shan Tang Books, 1994.</p>
+<p>Dillon, Michael. &ldquo;Transport and Marketing in the Development of the Jingdezhen Porcelain Industry during the Ming and Qing Dynasties.&rdquo; Journal of the Economic and Social History of the Orient&nbsp;35, no. 3 (1992): 278&ndash;90. https://doi.org/10.1163/156852092x00156.</p>
+<p>Garner, Harry. Oriental Blue and White. 3rd ed. London: Faber, 1954.</p>
+<p>Gerritsen, Anne. &ldquo;Fragments of a Global Past: Ceramics Manufacture in Song-Yuan-Ming Jingdezhen.&rdquo; Journal of the Economic and Social History of the Orient&nbsp;52, no. 1 (2009): 117&ndash;52. https://doi.org/10.1163/156852009x405366.</p>
+<p>Gerritsen, Anne. &ldquo;Porcelain and the Material Culture of the Mongol-Yuan Court.&rdquo; Journal of Early Modern History&nbsp;16, no. 3 (2012): 241&ndash;73. https://doi.org/10.1163/157006512x644793.</p>
+<p>Jia, Jinhua. &ldquo;Formation of the Traditional Chinese State Ritual System of Sacrifice to Mountain and Water Spirits.&rdquo; Religions&nbsp;12, no. 5 (2021): 319. https://doi.org/10.3390/rel12050319.</p>
+<p>Kieschnick, John. &ldquo;Chapter 2: Symbolism.&rdquo; Essay. In The Impact of Buddhism on Chinese Material Culture, 83&ndash;156. Princeton, NJ: Princeton University Press, 2003.</p>
+<p>Li, Weidong, Xiaoke Lu, Hongjie Luo, Xinmin Sun, Lanhua Liu, Zhiwen Zhao, and Musen Guo. &ldquo;A Landmark in the History of Chinese Ceramics: The Invention of Blue-and-White Porcelain in the Tang Dynasty (618&ndash;907 A.D.).&rdquo; STAR: Science &amp; Technology of Archaeological Research&nbsp;3, no. 2 (2016): 358&ndash;65. https://doi.org/10.1080/20548923.2016.1272310.</p>
+<p>McCausland, Shane. &ldquo;Blue-and-White, The Yuan Global Brand.&rdquo; Essay. In The Mongol Century: Visual Cultures of Yuan China, 1271-1368. Honolulu, HI: University of Hawai&rsquo;i Press, 2014.</p>
+<p>Pierson, Stacey. &ldquo;Beyond Vessels: Chinese Ceramics in the Modern World.&rdquo; Essay. In Chinese Ceramics: A Design History, 122&ndash;23. London: V &amp; A, 2009.</p>
+<p>Prazniak, Roxann. &ldquo;Dadu in Khitai (Great Yuan).&rdquo; Essay. In Sudden Appearances: The Mongol Turn in Commerce, Belief, and Art. Honolulu: University of Hawaiʻi Press, 2021.</p>
+<p>Valenstein, Suzanne G., and Metropolitan Museum of Art. A Handbook of Chinese Ceramics. New York, NY: Metropolitan Museum of Art, 1975.</p>
+<hr />
+
+<div>
+<p id="ftnt1">[1] &nbsp;Weidong Li et al., &ldquo;A Landmark in the History of Chinese Ceramics: The Invention of Blue-and-White Porcelain in the Tang Dynasty (618&ndash;907 A.D.),&rdquo; STAR: Science &amp; Technology of Archaeological Research&nbsp;3, no. 2 (2016): pp. 358-365, https://doi.org/10.1080/20548923.2016.1272310.</p>
+</div>
+<div>
+<p id="ftnt2">[2] &nbsp;Anne Gerritsen, &ldquo;Fragments of a Global Past: Ceramics Manufacture in Song-Yuan-Ming Jingdezhen,&rdquo; Journal of the Economic and Social History of the Orient&nbsp;52, no. 1 (2009): pp. 117-152, https://doi.org/10.1163/156852009x405366, 135-136.</p>
+</div>
+<div>
+<p id="ftnt3">[3] &nbsp;Ibid, 137.</p>
+</div>
+<div>
+<p id="ftnt4">[4] &nbsp;Shane McCausland, &ldquo;Blue-and-White, The Yuan Global Brand,&rdquo; in The Mongol Century: Visual Cultures of Yuan China, 1271-1368&nbsp;(Honolulu, HI: University of Hawai&rsquo;i Press, 2014), 227.</p>
+</div>
+<div>
+<p id="ftnt5">[5] &nbsp;Roxann Prazniak, &ldquo;Dadu in Khitai (Great Yuan),&rdquo; in Sudden Appearances: The Mongol Turn in Commerce, Belief, and Art&nbsp;(Honolulu: University of Hawaiʻi Press, 2021).</p>
+</div>
+<div>
+<p id="ftnt6">[6] &nbsp;Anne Gerritsen, &ldquo;Porcelain and the Material Culture of the Mongol-Yuan Court,&rdquo; Journal of Early Modern History&nbsp;16, no. 3 (2012): pp. 241-273, https://doi.org/10.1163/157006512x644793.</p>
+</div>
+<div>
+<p id="ftnt7">[7] &nbsp;Denise Aigle, &ldquo;The Transformation of a Myth of Origins, Genghis Khan and Timur,&rdquo; in The Mongol Empire between Myth and Reality: Studies in Anthropological History&nbsp;(Leiden, NL: Brill, 2014), pp. 124-127.</p>
+</div>
+<div>
+<p id="ftnt8">[8] &nbsp;Which, in addition, truly highlights the degree to which the process of porcelain production was methodical and industrialized at this point in time; nearly indistinguishable from each other, only the hints of age (cracks, repairs, fading colors) truly differentiate the brush rests from one another.</p>
+</div>
+<div>
+<p id="ftnt9">[9] &nbsp;Mahdi, Muhsin, Schimmel, Annemarie and Rahman, Fazlur. "Islam," Encyclopedia Britannica, August 17, 2021. https://www.britannica.com/topic/Islam.</p>
+</div>
+<div>
+<p id="ftnt10">[10] &nbsp;McCausland, 227.</p>
+</div>
+<div>
+<p id="ftnt11">[11] &nbsp;The iconographical significance of which will be detailed later in this paper.</p>
+</div>
+<div>
+<p id="ftnt12">[12] &nbsp;Nurhan Atasoy, Yanni Petsopoulos, and Julian Raby, &ldquo;V. The Making of an Iznik Pot,&rdquo; in Iznik: The Pottery of Ottoman Turkey&nbsp;(London: Alexandria Press in association with Laurence King, 1994), pp. 50-51.</p>
+</div>
+<div>
+<p id="ftnt13">[13] &nbsp;Suzanne G. Valenstein and Metropolitan Museum of Art, A Handbook of Chinese Ceramics&nbsp;(New York, NY: Metropolitan Museum of Art, 1975), 72.</p>
+</div>
+<div>
+<p id="ftnt14">[14] &nbsp;Stacey Pierson, &ldquo;Beyond Vessels: Chinese Ceramics in the Modern World,&rdquo; in Chinese Ceramics: A Design History&nbsp;(London: V &amp; A, 2009), pp. 122-123.</p>
+</div>
+<div>
+<p id="ftnt15">[15] &nbsp;Ibid, pp. 122-123.</p>
+</div>
+<div>
+<p id="ftnt16">[16] &nbsp;Gerald Davison, The Handbook of Marks on Chinese Ceramics&nbsp;(London: Han-Shan Tang Books, 1994), 12-13.</p>
+</div>
+<div>
+<p id="ftnt17">[17] &nbsp;Paravicini Agostino Bagliani, Chiara Crisciani, and Dominic Steavu, &ldquo;The Marvelous Fungus and The Secret of Divine Immortals,&rdquo; in Longevity and Immortality: Europe, Islam, Asia&nbsp;(Firenze, CA: Sismel, Edizioni del Galluzzo, 2018), pp. 353-380.</p>
+</div>
+<div>
+<p id="ftnt18">[18] &nbsp;Jinhua Jia, &ldquo;Formation of the Traditional Chinese State Ritual System of Sacrifice to Mountain and Water Spirits,&rdquo; Religions&nbsp;12, no. 5 (2021): p. 319, https://doi.org/10.3390/rel12050319.</p>
+</div>
+<div>
+<p id="ftnt19">[19] &nbsp;T. Editors of Encyclopaedia Britannica, &ldquo;Pillars of Islam,&rdquo; Encyclop&aelig;dia Britannica, March 13, 2020, https://www.britannica.com/topic/Pillars-of-Islam.</p>
+</div>
+<div>
+<p id="ftnt20">[20] &nbsp;John Kieschnick, &ldquo;Chapter 2: Symbolism,&rdquo; in The Impact of Buddhism on Chinese Material Culture&nbsp;(Princeton, NJ: Princeton University Press, 2003), pp. 143-147.</p>
+</div>
+<div>
+<p id="ftnt21">[21] &nbsp;McCausland, 227.</p>
+</div>
+<div>
+<p id="ftnt22">[22] &nbsp;John Carswell, Blue and White: Chinese Porcelain around the World&nbsp;(London: British Museum Press, 2000), 138.</p>
+</div>
+<div>
+<p id="ftnt23">[23] &nbsp;Harry Garner, Oriental Blue and White, 3rd ed. (London: Faber, 1954), 29-32.</p>
+</div>]]></content><author><name></name></author><category term="Historical Research" /><summary type="html"><![CDATA[In Jingdezhen, Jiangxi province (江西省, 景德鎮), a paint brushrest was found at some point in the 20th century. This research paper focuses on the visual manifestation of cultural exchange in this brushrest, functioning as a tangible reminder of the complexities of any nation’s history.]]></summary></entry><entry><title type="html">Power &amp;amp; The Perpetual: A Case Study of the History and Monuments of Washington Square Park</title><link href="http://localhost:4000/historical%20research/2021/05/26/washington-square.html" rel="alternate" type="text/html" title="Power &amp;amp; The Perpetual: A Case Study of the History and Monuments of Washington Square Park" /><published>2021-05-26T00:00:00-04:00</published><updated>2021-05-26T00:00:00-04:00</updated><id>http://localhost:4000/historical%20research/2021/05/26/washington-square</id><content type="html" xml:base="http://localhost:4000/historical%20research/2021/05/26/washington-square.html"><![CDATA[<h1>Introduction</h1>
+<p>Sciences are based in the tangible and observable world. Memory, unfortunately, is neither of those. It is ephemeral, and in an attempt to make it permanent, many civilizations throughout history have chosen to use objects to create an illusion of a perennial memory, affecting future generations. Such objects are often made monumental in scale or attempt to be monumental in effect: and with the exception of site-specific monuments in remote locations, monuments are often placed in high-traffic urban spaces that maximize their viewership and their effect. Especially for monuments that are colossal in scale, these objects begin to fundamentally shape the environment of the people who live in sight of them, changing the skyline with their construction. Even details of the surrounding location become significant and fought over. This paper will be a case study of Washington Square Park and its monuments, considering its historical relevance, setting for the Washington Square Arch, and its still-popular role as a meeting place for the youth of New York City.</p>
+<!--more-->
+<p>There are less than 20 still-standing triumphal arches in the United States, one of which stands in Washington Square Park, influencing the horizon of downtown Manhattan. However, even the creation of the park itself, having occurred more than half a century before, was controversial and politically motivated, being in itself a monumental act that would change the skyline and living memory from the moment the decision was made. However, those who choose to make the decision and what was chosen to be remembered was selective, and continuously, from its very beginning, Washington Square Park has been a mirror of its surrounding inhabitants; revealing patterns of bureaucracy and class conflict in different dimensions, it has mimicked American capitalist democracy in its strengths and weaknesses over time, clearly visible even today.</p>
+<h1>Origins</h1>
+<p>First settled in the late 17th century, the region north of what was (at the time) recently renamed New York was being settled by the wealthy: it was nicknamed Greenwich Village, the residents having been reminded of Greenwich, England, which was the perfect location for a country estate. To the dismay of this affluent population, during the yellow fever epidemics of the early 19th century, a plot of land in the greenspace was designated as a government cemetery for victims of yellow fever, despite protests from the wealthy, quickly attracting tramps and prostitutes.<sup><a href="#ftnt1">[1]</a></sup>&nbsp;It functioned as a graveyard until May 24, 1824, when a&nbsp;New York Evening Post&nbsp;article was released under the headline, &ldquo;Resurrectionist,&rdquo; telling the story of an escaped prisoner who had taken refuge in one of the graves and then had been discovered by a groundskeeper during the night. Burials in the area then ceased in almost exactly a year.<sup><a href="#ftnt2">[2]</a></sup>&nbsp;This, from the beginning, shows the appeal to wealth in the city and in the location.</p>
+<p>This sort of appeal, especially at the time of the park&rsquo;s establishment, permeated into government authority as well. Sailor&rsquo;s Snug Harbor, once called The Marine Society (of whom George Washington was a part), was a charitable trust meant to help indigent seamen. Down on their luck and receiving no public tax support, the trust needed more rents on their property that lay east of Fifth Avenue. They owned 21 acres of farmland, most of which touched the northern boundary of the potter&rsquo;s field. Philip Hone, mayor of New York and a trustee of Sailor&rsquo;s Snug Harbor, wanted to help; having seen the success of establishing Hudson Square in the 1820s, which boosted the economic success of Trinity Church, he decided to implement a similar plan for the trust. However, establishing the park would require changing the Commissioner&rsquo;s Plan, which at that point in time was controlled by state legislature to avoid this kind of special interest activities. Furthermore, land in Manhattan was also growing more and more valuable, the old potter&rsquo;s field being worth 23 times more in 1826 than what the city had paid for it in 1767,<sup><a href="#ftnt3">[3]</a></sup>&nbsp;making demand for the plot of land, whether for real estate development or otherwise, that much more competitive. For the area to be declared a park, careful and intentional planning had to be involved.</p>
+<p>Almost two decades earlier, a 270-acre parade ground had been created in preparation for The War of 1812 right above 23rd Street and was cut down in size after the war ended in 1814. When the Common Council met in February 1826, they began to question the Parade Grounds&rsquo; substantial size and reason for being. Hone ensured that he&rsquo;d be present at the time of discussion, and had mustered support for the movement of the parade grounds to the former potter&rsquo;s field, meant to provide a location for the local military&rsquo;s ceremonial public displays of unity and glory, especially at a time when the military was made up of local citizens.<sup><a href="#ftnt4">[4]</a></sup>&nbsp;While true, the local citizenry at the time was increasingly becoming wealthy, masking the subtle appeal to the upper crust population in the area.</p>
+<p>This patriotic approach was further strengthened through the choice in name for the new park. The square&rsquo;s surrounding north-south streets were already named after heroic generals of the Revolution, so in order to especially highlight the role of George Washington, the new square was named the &ldquo;Washington Military Parade Ground&rdquo;. The name also significantly enhanced lot values,<sup><a href="#ftnt5">[5]</a></sup>&nbsp;as an additional benefit. Once the parade grounds were declared, the new potter&rsquo;s field was designated to the location that would eventually contain Bryant Park and the New York Public Library,<sup><a href="#ftnt6">[6]</a></sup>&nbsp;revealing the repeated exploitation of circumstance in the city as the dead are disregarded only then when it is convenient for the people in power.</p>
+<p>Washington Square would be in need of expansion to compete with Belgrave Square, which Hone sought to emulate. After 10 months of negotiations, eight owners with 12 contiguous lots built uniform terrace housing, similar to those lining Regent Park. While this didn&rsquo;t necessarily appeal to the egalitarian tendencies of America at the time, due to the intention to make each row house look as palatial as possible, it enclosed the square in an aesthetically pleasing fashion.<sup><a href="#ftnt7">[7]</a></sup>&nbsp;Prioritizing the property value, competitiveness with other popular squares, and physical appearance of the surrounding buildings, even engaging in indulgent, ritzy design when at the same time, in October 1827, the court had just approved the council&rsquo;s decision to expand the square, and denoted the park as a &ldquo;Public Place,&rdquo; unlike London&rsquo;s squares, which were explicitly private,<sup><a href="#ftnt8">[8]</a></sup>&nbsp;providing a superficial title of democracy and universal rights, while still engaging with the same practices meant to exclude lower-class groups, increasing the cost of living near the park.</p>
+<p>When these rowhouses first went up for sale, they were advertised in the New York Gazette of January 6, 1827, under the heading, &ldquo;To Capitalists&rdquo;.<sup><a href="#ftnt9">[9]</a></sup>&nbsp;And his plan to increase the property worked: &ldquo;capitalist&rdquo;, aristocratic families with lineage to the Mayflower began to move to the area, including but not limited to the Taylors, Griswolds, and Johnstons.<sup><a href="#ftnt10">[10]</a></sup></p>
+<p>Of note is one of the greatest protests against the expansion: the dead of the Scotch Presbyterian Church would be disrupted by it.<sup><a href="#ftnt11">[11]</a></sup>&nbsp;Regardless of the predominantly British and Scottish wealthy population in the area, the demand for more space for the park to compete with those seen in Britain forced the park to increase in size. The protests were ignored in the name of higher property values and to provide a luxurious location for the rich. This was so desired that even the stables were located a bit more south, in the working-class area of Greenwich, to ensure that the smell and filth did not contaminate the beauty directly surrounding the park.<sup><a href="#ftnt12">[12]</a></sup></p>
+<p>The University of the City of New York, later named New York University (NYU), paid a steep price for a new building, starting with $40,000 for an entire blockfront in 1832, which left the university with $66.46 of their original funds. The university sank into debt, not paying professors and mortgaging their books. Incorporating Gothic chapels, some towers and buttresses protruded over the building line, which required the shortening of the marble for the first three floors in 1834. This resulted in the use of convict labor from Sing-Sing prison, rather than from local stonecutters.</p>
+<p>The local stonecutters then rebelled, smashing windows in the surrounding areas as well as marble mantles in protest of New York University&rsquo;s decision,<sup><a href="#ftnt13">[13]</a></sup>&nbsp;highlighting the weakness of the high-class indulgence demanded by the institution, which ultimately resulted in little change for the local stonecutters. They converged on construction sides with rocks and brickbats, and to protect the building, New York&rsquo;s National Guard was called in and stayed in Washington Square for four days and nights until peace returned to the area. The ability for the park to become a mock-battleground for class conflict most clearly begins here. Afterward, NYU&rsquo;s financial strife resulted in a need to rent out its space to artists and other creative personalities, becoming a haven for one of the city&rsquo;s earliest bohemian communities,<sup><a href="#ftnt14">[14]</a></sup>&nbsp;functioning as a major accelerating force for the first introduction of a bohemian, less affluent community into the area directly surrounding the park.</p>
+<p>However, the conflicts that occured at the time were not purely economically driven. In 1849, after five years of accusations and sabotaged performances between the British star William C. Macready and Edwin Forrest, a bombastic player who was beloved by the working-class Irish, reached a boiling point, manifesting as the consequence of ethnic tensions. On the second night of Macready&rsquo;s performance at Astor Place, hooligans started throwing cobblestones at the opera house. Units of the Seventh Regiment were called in and 21 rioters and bystanders were killed,<sup><a href="#ftnt15">[15]</a></sup>&nbsp;showing the lengths that the authorities would implement to maintain an outward peace in the area, especially for those of a higher socioeconomic class.</p>
+<p>Theaters and opera houses became a popular attraction for local genteel population, spreading the beliefs of bohemianism; however, not all were accommodating to the artists that were needed to supply the arts being consumed, the New York Times&nbsp;once claiming: that &ldquo;the Bohemian cannot be called a useful member of society, and it is not an encouraging sign for us that the tribe has become so numerous among as to form a distinct and recognizable class who do not object to being called by that name&rdquo;.<sup><a href="#ftnt16">[16]</a></sup>&nbsp;</p>
+<p>However, once the Civil War began in 1861, this began to change, as the wealthy began to move uptown, and poorer, working-class families began to move into the village,<sup><a href="#ftnt17">[17]</a></sup>&nbsp;the wealthy typically moving out and leasing their old homes to these lower-status individuals,<sup><a href="#ftnt18">[18]</a></sup>&nbsp;especially Italians and artists that loved the cheap but delicious food that came with Italian cafe life.<sup><a href="#ftnt19">[19]</a></sup>&nbsp;</p>
+<h1>Antebellum New York City</h1>
+<p>In 1863, draft riots occurred when predominantly Irish laborers couldn&rsquo;t afford a substitute or the $300 exception fee after the first draft for the Civil War. The emancipation of blacks also made whites afraid for their job security in the city. These workingmen wandered around the park, beating black men and cutting telephone wires. 105 people had been killed as a result of the riots, making these riots the most violent public disturbance in American history.<sup><a href="#ftnt20">[20]</a></sup>&nbsp;This had further accelerated the process of the wealthy beginning to flee the area into uptown Manhattan. These ethnic tensions remained after the riot, dividing the groups by religious biases as well as infighting led to events such as the Orange Riots erupting in 1870-1871 between Irish Catholic and Scottish Protestant immigrants, resulting in at least 62 deaths.<sup><a href="#ftnt21">[21]</a></sup>&nbsp;</p>
+<p>In the 1870s, the majority Irish Catholic Tammany Hall, led by William &ldquo;Boss&rdquo; Tweed (who would soon fall from power due to his inability to control the Irish population during the Orange Riots), encouraged the renovation of many of the city&rsquo;s parks, leading to Washington Square&rsquo;s new gaslight lamp posts and curved, leisurely walkways being designed by Frederick Law Olmsted,<sup><a href="#ftnt22">[22]</a></sup>&nbsp;meant to make the former military ground feel more like a park. The original fountain, built in 1852, was also replaced with a smaller, 72&rsquo; diameter fountain in order to make room for the main roadway,<sup><a href="#ftnt23">[23]</a></sup>&nbsp;which would in the coming century become remarkably significant as capitalist priorities and goals intensified, but at the time appealed to the increasing need for the trasport of commercial goods and people with the antebellum economy. Olmsted&rsquo;s redesign of the park would create three new streets connecting to the square, worrying the wealthy that easier access to the square would encourage criminals to attack the park&rsquo;s visitors,<sup><a href="#ftnt24">[24]</a></sup>&nbsp;revealing a continuation of the concerns over class conflict by the wealthy, similar to those concerns from when the park was merely a potter&rsquo;s field. In 1878, the square was officially legislated as an official public park.<sup><a href="#ftnt25">[25]</a></sup></p>
+<h1>The Creation of the Arch</h1>
+<p>A bit more than a decade later, in order to celebrate the centennial of George Washington&rsquo;s inauguration as president, a triumphal arch was built in the center of the park out of plaster and wood (fig.1). Meant to be a temporary installation, the arch was eventually torn down: however, the arch had been praised so much by the elite, a permanent version made out of marble was commissioned, featuring two statues of Washington as commander in chief and as president.<sup><a href="#ftnt26">[26]</a></sup>&nbsp;However, it seemed like only one of Washington's roles was meant to be emphasized, considering the select words that were chosen at the dedication of the arch.</p>
+<p>The orator who spoke at the dedication of the marble Washington Square Arch in 1895 was Horace Porter, whose speech, focusing on the successes of Washington, emphasized the military victory against Britain during the American Revolution, rather than the invention of American democracy, marking a change in the form of Revolutionary memory after the Civil War, which was once hailed as the victory of democracy over tyranny. This change and choice in emphasis made sense, considering the subtle theme in the speech surrounding the mending of the gap between the increasingly stratified poor and wealthy that was becoming more dramatic during the Gilded Age, and coming together behind the military victories of Washington, rather than focusing on the political.<sup><a href="#ftnt27">[27]</a></sup>&nbsp;It was easier to unite behind blind patriotism than concrete politics, as the conventionally wealthy that once lived around the park began to flee the area due to the increased commercialization and waves of immigrantion in the area, physically increasing the distance between the poor and rich.</p>
+<p>After the Civil War, the economy had boomed, resulting in the bettering of lives of all New Yorkers. The city&rsquo;s industrial production and its property values more than doubled in the time between 1860 and 1870,<sup><a href="#ftnt28">[28]</a></sup>&nbsp;directly leading to the Gilded Age. William Rhinelander Stewart, a neighborhood resident and part of one of New York&rsquo;s Knickerbocker families, a group of prominent and aristocratic Dutch and English family names, led the fundraising effort for the building of the arch,<sup><a href="#ftnt29">[29]</a></sup>&nbsp;revealing the personal initiative taken up by either those who left most guilty at their success, influenced by Bohemian thought in the area, or those who genuinely wanted to hide the deep inequality of the time. Regardless, $128,000 was spent on the creation of the arch, of which about four-fifths was funded by 400 individual, personal donors.<sup><a href="#ftnt30">[30]</a></sup></p>
+<p>Furthermore, at its height and position, the arch invoked the grandeur of London and Paris,<sup><a href="#ftnt31">[31]</a></sup>&nbsp;once again attempting to increase the value of the surrounding land (and thus the rents and price of living) in the area, but also highlighting an overall changing time in the city. In 1872, the Domestic Sewing Machine Company built one of New York City&rsquo;s first skyscrapers, marking a change in the skyline, in the economy, and in the city,<sup><a href="#ftnt32">[32]</a></sup>&nbsp;and the creation of this arch may have also functioned as an attempt for the park to assert its presence in the city as skyscrapers began to pop up all over the city.</p>
+<h1>The Statue of Guisseppe Garibaldi</h1>
+<p>Another patriotic figure also became commemorated in the park as a larger-than-life-size monument (fig. 3) in 1888: Giuseppe Garibaldi, a military celebrity of the mid-to-late 19th century; he was a leader of Italy&rsquo;s 1814-71 struggle for independence. At the time, many Americans actively supported Garibaldi and the Risorgimento, seeing in the figure a symbol of how anarchy can transform into authority, standing for patriotism over politics,<sup><a href="#ftnt33">[33]</a></sup>&nbsp;which could also be seen as a call to unity after the political divide present in the United States after the Civil War. This is further supported by the funding of the statue by Italian immigrants of all classes, who had recently immigrated to the United States in masses, largely disconnected from the Civil War, unlike the Irish working classes.<sup><a href="#ftnt34">[34]</a></sup></p>
+<p>Like heroic images of Washington, the image of Garibaldi was that of a romantic, humbled hero, seen in his plain clothes and large scale of the monument, further elevated on a pedestal. In the papers, he was advertised as &ldquo;Garibaldi, the Washington of Italy,&rdquo; and the phrase was repeated frequently enough to become a catchphrase.<sup><a href="#ftnt35">[35]</a></sup>&nbsp;By positioning this military hero in the context of the arch, Washington&rsquo;s role as a military hero is once again emphasised, as he was by Porter&rsquo;s speech, whether intentionally or unintentionally.</p>
+<h1>The Statue of Alexander Lyman Holley</h1>
+<p>Upon his death in Brooklyn at age 49 in 1882, Alexander Lyman Holley was in the process of creating professional societies, three of which jointly raised funds to commission his memorial in the park: the American Society of Mechanical Engineers (ASME), the Institute of Mining, Metallurgical and Petroleum Engineers (AIME), and the American Society of Civil Engineers (ASCE). These groups, important to the Gilded Age and Industrial Revolution, reflected the priorities of industrialists and their cross-ethnic nature reflected their differences from both, the working class and upper crust populations: less dramatic than the arch and the Garibaldi statue, this one was clearly different. The memorial, a bronze bust mounted on a tripartite pedestal made of limestone, was dedicated on October 2, 1890, and was witnessed by a group of engineers from different societies, including some from Germany and France.<sup><a href="#ftnt36">[36]</a></sup></p>
+<p>However, some considered the choice in location for the bust to be poor. Specifically within the park, the location was perceived to be easily ignored. But in spite of that, it is possible that the bust&rsquo;s small scale, especially positioned near the massive arch, would always make it blend into the background, which was to be seen as the bust was later moved within the park even more off to the side. This was also somewhat addressed in the criticisms of the choice of the park itself, lacking direct relevance to the identity of Holley. The New York Times suggested that the statue be moved to the grounds of Columbia University or the town of Troy, due to Holley&rsquo;s history with the places.<sup><a href="#ftnt37">[37]</a></sup></p>
+<p>But this issue of becoming outdated and irrelevant began to affect the arch and the old row houses as well, as the surrounding area became increasingly commercialized. In the 1890s, new commercial buildings began to dwarf the older ones seen in the area. Henry James, the author of Washington Square, born two doors down from the old NYU building, claimed that his birthplace had been &ldquo;ruthlessly suppressed&rdquo; when it was torn down,<sup><a href="#ftnt38">[38]</a></sup>&nbsp;revealing the suppression that older residents viewed of the capitalist changes, marking a standstill for the potential development of the park, but the marked continuation for the capitalist endeavors surrounding it.</p>
+<h1>Artists &amp; The Non-Bourgeois</h1>
+<p>At the turn of the 20th century, it seemed like there were beginning to be more artists than immigrants in the area, and upper-middle-class families and professionals moved into the residences surrounding the park, as new subway lines were being built nearby and Greenwich Village became the location for shops and restaurants. The area became increasingly visited by intellectuals and alternative types: rebellious artists, painters, writers, and social commentators, exasperating a pattern already seen since the mid-19th century. This continued up until the Great Depression when the attention of federal investigators was drawn in the 1930s due to the prominence of anti-war and pro-worker support in local independent news journals. The artistic outlook of these artists and musicians that spent a majority of their time in the park took it over more as the street benches got vandalized, and the lawns were allowed to turn brown, and the fountain began to leak: and yet, its residents found it comfortable.<sup><a href="#ftnt39">[39]</a></sup></p>
+<p>Between 1870 and 1970, a road ran through the park (fig. 5), and starting in the 1930s, the park commissioner in New York City at the time, Robert Moses, had decided that the park needed to be renovated, and that a larger, more efficient road needed to cut through it in order to alleviate the surrounding traffic, showing the extremes that this commercialization was reaching: efficiency is a priority for hyper-capitalist societies, and for this efficiency to permeate in Greenwich Village, a road through the park was needed. In response, Jane Jacobs, Shirley Hayes, along with neighborhood committees fought to remove all traffic from the park, including the elimination of the already-existing roadway that connected 5th Avenue and Washington Square South, going through the arch,<sup><a href="#ftnt40">[40]</a></sup>&nbsp;revealing the level of control that these locals did have even though the population was no longer of the true, aristocratic elite that now resided uptown.</p>
+<p>In 1958, Lewis Mumford, the architectural critic at the New Yorker, wrote in a press release that Moses&rsquo; actual intentions were to extend the name &ldquo;Fifth Avenue&rdquo; to a region of lower Manhattan by literally extending the avenue through the park. This would increase the value of the surrounding real estate, encouraging real estate developers and the private sector (as well a not-for-profit institution, NYU) to revitalize the increasingly tawdry park,<sup><a href="#ftnt41">[41]</a></sup>&nbsp;which surprisingly mirrors the desires of Philip Hone in the 19th century to create the park in the first place. In this case, however, the man did not succeed, revealing a weakening government, especially in relation to independent actors.</p>
+<h1>The Flag Staff</h1>
+<p>A commemorative flagpole had been built in 1920 to honor those who had died during World War I. The names of the men from the surrounding areas were written all along the base of the flagpole, with the exception of most African American and Italian-American men who had also equally sacrificed their lives for their country,<sup><a href="#ftnt42">[42]</a></sup>&nbsp;and the flagpole having been funded by the Washington Square Association, a neighborhood group revealed the exclusive patriotism its members showed.<sup><a href="#ftnt43">[43]</a></sup>&nbsp;Initially, the flagpole had been positioned so that it could be seen directly under the arch when looked at from 5th Avenue (fig. 6), but was moved in 1970 with the removal of the road going through the park and is now surprisingly hard to find among the trees and towering buildings, even though it is a flagpole (fig. 7). This physical shift away from center stage revealed the shift away from the patriotism that the late 19th and early 20th centuries intended to push using these public monuments.</p>
+<h1>Becoming NYU</h1>
+<p>In the meantime, NYU was buying up the properties surrounding the park. Bobst Library, announced in 1963 and completed in 1974, is a massive, fortress-like red sandstone (fig. 8) that stands at the southeast corner of the park casts a shadow over the park,<sup><a href="#ftnt44">[44]</a></sup>&nbsp;which would shape the skyline of the Fifteenth Ward. Initially controversial, this building would foreshadow the future effect of the institution on the area.<sup><a href="#ftnt45">[45]</a></sup>&nbsp;In the 1970s and early 1980s, the future of the university was in doubt, repeatedly approaching bankruptcy due to low enrollment and high crime rate; but with the economic boom of the late 20th century, NYU and their magnate-heavy board of directors would begin to engage significantly in the real-estate market of downtown Manhattan, working with the process of gentrification that was already taking over Manhattan. Like the wealthy did with the poor in the first century of its existence, Washington Square and its surrounding areas were intentionally manipulated to once again increase rents and price of living for the area.<sup><a href="#ftnt46">[46]</a></sup></p>
+<p>Unfortunately for the park and its interior, the park&rsquo;s setting for political protests in the 1960s and 1970s resulted in the base of the arch being covered in posters and graffiti, which was then repainted over in the 1990s. The area around the arch was also cordoned off in the year 1990, due to the hazard posed by falling fragments, as a result of the crumbling rock and long-term water damage, making it that much harder to be enjoyed up close by the park&rsquo;s visitors. In 1997, partial funding allowed for the partial intervention of A. Ottovino Corp. to remove more paint and graffiti along the base of the arch and the installation of a new roof for the arch,<sup><a href="#ftnt47">[47]</a></sup>&nbsp;but the inability to fund the full repair of the arch showed the lack of care and money that the government and the remaining locals had, especially for the focused improvement of the park.</p>
+<p>Through the Adopt-A-Monument Program, the monument of Alexander Lyman Holley was preserved and maintained in 1990. Half of this process was funded by the ASME Council on Public Affairs and ASME Metropolitan Section, AIME, ASCE, and the Steel Service Center Institute, while the other half was equally funded by Save Outdoor Sculpture! (SOS!), a program sponsored by the Heritage Preservation and the National Museum of American Art, Smithsonian Institution, and underwritten by Target Stores and the National Endowment for the Arts.<sup><a href="#ftnt48">[48]</a></sup>&nbsp;Like its origins, the maintenance of the sculpture was paid for by the partially impartial people of science who had an apolitical appreciation for the figure, as well as a corporation that could also benefit from some good press.</p>
+<p>However, Garibaldi&rsquo;s statue had been more aggressively vandalized, even forcing his scabbard into storage due to the extensive damage on it, perhaps due to its more audacious and political presentation.<sup><a href="#ftnt49">[49]</a></sup>&nbsp;The statue was cleaned in 1998, funded by the City Parks Foundation Monuments Conservation Program, and the scabbard was repaired and restored to its original location in part by The American Express Company,<sup><a href="#ftnt50">[50]</a></sup>&nbsp;since the long-gone immigrant community had left the area long ago, and the financial services company could have benefited from some charitable virtue signaling. Although many NYU students used the park and the campus had seemingly begun to swallow the park into itself, none of this was funded by NYU&rsquo;s (upwards of) multi million dollar endowment.</p>
+<h1>Contemporary Renovations &amp; Memorials</h1>
+<p>In 2005, there was to be another renovation of the park: George Vellonakis, the architect for the Parks Department since 1986, would be the one to design it at a cost of $16 million.<sup><a href="#ftnt51">[51]</a></sup>&nbsp;His changes would involve the following: the relocation of a dog park, the placement of a new park in the location of an old park&rsquo;s remnants (at the time three large asphalt mounds, housing the neighborhood rats), and the replacement of a plaza with a lawn.<sup><a href="#ftnt52">[52]</a></sup>&nbsp;Regardless of the direct improvements, he was hoping to accomplish, there was pushback.</p>
+<p>These renovations would largely change the manner in which people would interact with the park, rather than fixing the park&rsquo;s monuments, which, as mentioned earlier, were largely in disrepair. This economic, utilitarian approach focused on the visitor and their comfort, even if the experience had become false and largely manufactured. Before then, the renovations to the park were meant to merely facilitate new uses and to create new kinds of aesthetics, but in this scenario, there was a unique regression: reintroducing gaslight lamp posts and Victorian-era benches.</p>
+<p>Luther Harris was one vocal opponent, who claimed that the plan would ruin the current layout that belongs in the naturalistic/Olmsted tradition. According to Harris, &ldquo;The insensitive Parks Department wants the retro look and feel of an Old Town Square and inappropriate classical symmetry, a bogus interpretation of history,&rdquo; especially through the removal of the 70s style architecture that Harris himself had last seen.&nbsp;Some went as far to claim that the renovations the park into what some called a &ldquo;Disney-like historic themed landscape&rdquo;.<sup><a href="#ftnt53">[53]</a></sup></p>
+<p>However, there were also examples of performative pushback, such as those who opposed the plan in fears of gentrification and engaged with highly performative acts of protest. During one community meeting between the Department of Parks, demonstrators showed up with their mouths taped over.<sup><a href="#ftnt54">[54]</a></sup>&nbsp;Notwithstanding, without the influence of the Department of Parks, the area itself had already become gentrified; and if this approach, focused on gentrification, is to be taken seriously, it appears as if the gentrified park was being marked upon by the wealthy, surrounding area, rather than the other way around. The halting of the process would have merely slowed down the gentrification, rather than stopping it all together.</p>
+<h1>Conclusion</h1>
+<p>This paper has gone over about four centuries of history, following the major changes and evolutions of Washington Square Park, with a focus on its monuments. With every change, funds and requests had to be made by those in power. However, regardless of America&rsquo;s insistence on the fundamentals of the American Dream and democracy itself, those in power change and evolve with time. While at first, it appeared that those in charge were those in government, it unveiled itself to eventually become the wealthy. With the rise of the Industrial Revolution, commercialization took over the reins from the personal desires of the higher class and it appeared as if the people of Greenwich Village were at the will and whim of all capitalist enterprise with its focus on efficiency and short-term practicality, eventually appearing to come to a halt with the success of Jane Jacobs against Robert Moses and his road.</p>
+<p>However, it appears that now NYU and their board of directors is the institution that pulls the strings behind the curtain now. And while carrying a facade of a nonprofit institution of higher education, the financers behave in a more selfish manner, as if the word &ldquo;nonprofit&rdquo; was gilding the true motivations.<sup><a href="#ftnt55">[55]</a></sup>&nbsp;Be it so it may, this pattern of shifting power has occurred time and time again, reflected directly in the treatment of objects in the public space of Washington Square Park, and was not the first time that similar labels were used to excuse such exploitative behavior: especially regarding the direct motivation of Philip Hone in establishing the park in the first place.</p>
+<p>Many memorials have been placed in the park over the years&mdash;&nbsp;a recent example being one for black victims of police brutality (fig. 9)&mdash; but not all were stopped from their ephemeral state the way the plaster arch was. Many of these ephemeral memorials end up merely cleaned up by sanitation with the only deciding factor being how much time the memorial is given before the people or authorities deem it so (fig. 10), and only those that are literally purchased from the Department of Parks as living memorials (fig. 11) are allowed to last. American democratic capitalism and its processes at its finest.</p>
+<hr style="page-break-before: always; display: none;" />
+
+<center>
+<h1>Works Cited</h1>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image1.png" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
+<p>Figure 1: White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image3.png" alt="White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co." /></p>
+<p>Figure 2: White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co.</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image2.jpg" alt="Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888." /></p>
+<p>Figure 3: Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888.</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image5.png" alt="Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889." /></p>
+<p>Figure 4: Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889.</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image4.png" alt="&ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives." /></p>
+<p>Figure 5: &ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives.</p>
+<p><img style="width: 70%;" title="Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York." src="/images/washington-square/image7.png" alt="" /></p>
+<p>Figure 6: Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York.</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image6.jpg" alt="McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021." /></p>
+<p>Figure 7: McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021.</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image9.png" alt="Elmer Holmes Bobst Library, April 22, 2011." /></p>
+<p>Figure 8: Elmer Holmes Bobst Library, April 22, 2011. <a href="https://www.google.com/url?q=https://www.flickr.com/photos/sbc9/5850770567&amp;sa=D&amp;source=editors&amp;ust=1660662077676147&amp;usg=AOvVaw2iKy_BCoFMr5733NrUu2ZA">https://www.flickr.com/photos/sbc9/5850770567</a></p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image8.jpg" alt="Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021." /></p>
+<p>Figure 9: Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021.</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image11.png" alt="Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021." /></p>
+<p>Figure 10: Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021. <a href="https://www.google.com/url?q=https://www.dailymail.co.uk/news/article-9582281/New-Yorks-Washington-Square-Park-resembles-dirty-garbage-dump-morning-huge-party.html&amp;sa=D&amp;source=editors&amp;ust=1660662077677204&amp;usg=AOvVaw1RiqydoFjkp8VBNMGvabiQ">https://www.dailymail.co.uk/news/article-9582281/New-Yorks-Washington-Square-Park-resembles-dirty-garbage-dump-morning-huge-party.html</a>&nbsp;</p>
+<p><img style="width: 70%;" title="" src="/images/washington-square/image10.png" alt="Plaque on Park Bench Advertising Living Memorials. April 20, 2021." /></p>
+<p>Figure 11: Plaque on Park Bench Advertising Living Memorials. April 20, 2021.</p>
+</center>
+<h1>Bibliography</h1>
+<p>&ldquo;ALEXANDER L. HOLLEY.; Interest in Troy in the Proper Site for. His Memorial Bust.&rdquo; The New York Times, 19 Aug. 1901, p. 6.</p>
+<p>&ldquo;Alexander Lyman Holley.&rdquo; Park Information, Official Website of the New York City Department of Parks &amp; Recreation, <a href="https://www.google.com/url?q=http://www.nycgovparks.org/parks/washington-square-park/monuments/735&amp;sa=D&amp;source=editors&amp;ust=1660662077677902&amp;usg=AOvVaw3TkiuMfRqhI51MK0sqqgwe">www.nycgovparks.org/parks/washington-square-park/monuments/735</a>.</p>
+<p>Berthold, Dennis. &ldquo;Melville, Garibaldi, and the Medusa of Revolution.&rdquo; American Literary History&nbsp;9, no. 3 (1997): 425&ndash;59. http://www.jstor.org/stable/490175.</p>
+<p>Brown, Thomas. &ldquo;VISIONS of VICTORY.&rdquo; Civil War Monuments and the Militarization of America, University of North Carolina Press, Chapel Hill, 2019, pp. 186&ndash;231. JSTOR, www.jstor.org/stable/10.5149/9781469653761_brown.7. Accessed 21 Apr. 2021.</p>
+<p>Finn, Robert. &ldquo;The Designer Who Would Change the Village Eden.&rdquo; The New York Times, 13 May 2005, p. 2. <a href="https://www.google.com/url?q=https://www.nytimes.com/2005/05/13/nyregion/the-designer-who-would-change-the-village-eden.html&amp;sa=D&amp;source=editors&amp;ust=1660662077678469&amp;usg=AOvVaw0HqrP8aamL3s3WbPe-SBAt">https://www.nytimes.com/2005/05/13/nyregion/the-designer-who-would-change-the-village-eden.html</a>.</p>
+<p>Flint, Anthony. Wrestling with Moses: How Jane Jacobs Took on New York's Master Builder and Transformed the American City. Random House, 2009.</p>
+<p>Folpe, Emily Kies. It Happened on Washington Square. Baltimore: Johns Hopkins University Press, 2002.</p>
+<p>Goode, Erich. The Taming of New York's Washington Square: a Wild Civility. New York: New York University Press, 2018.</p>
+<p>Harris, Luther H. Around Washington Square: an Illustrated History of Greenwich Village. Baltimore, MD: Johns Hopkins University Press, 2003.</p>
+<p>Krause, Monika. The University against Itself the NYU Strike and the Future of the Academic Workplace. Philadelphia, PA: Temple University Press, 2008.</p>
+<p>Rabinowitz, Mark, and Robin Gerstad. &ldquo;&lsquo;Let Us Raise a Standard...": The Preservation of Washington Square Arch in New York City.&rdquo; APT Bulletin: The Journal of Preservation Technology, vol. 36, no. 2/3, 2005, pp. 47&ndash;55. JSTOR, <a href="https://www.google.com/url?q=http://www.jstor.org/stable/40004704&amp;sa=D&amp;source=editors&amp;ust=1660662077679425&amp;usg=AOvVaw3_eMQLtaNMl7c5Vo1um6Fh">www.jstor.org/stable/40004704</a>. Accessed 21 Apr. 2021.</p>
+<p>Ulam, Alex. &ldquo;SQUARE DEAL ?&rdquo; Landscape Architecture, vol. 96, no. 3, 2006, pp. 102&ndash;111. JSTOR, <a href="https://www.google.com/url?q=http://www.jstor.org/stable/44676086&amp;sa=D&amp;source=editors&amp;ust=1660662077679785&amp;usg=AOvVaw1P18oDy4p3MQQ2UvpUwoTU">www.jstor.org/stable/44676086</a>. Accessed 21 Apr. 2021.</p>
+<p>&ldquo;Washington Square Arch.&rdquo; Park Information. Official Website of the New York City Department of Parks &amp; Recreation. Accessed May 25, 2021. https://www.nycgovparks.org/parks/washington-square-park/monuments/1657.</p>
+<hr />
+
+<div>
+<p id="ftnt1">[1] &nbsp;Flint, 67, 69.</p>
+</div>
+<div>
+<p id="ftnt2">[2] &nbsp;Geismar, 11.</p>
+</div>
+<div>
+<p id="ftnt3">[3] &nbsp;Luther H. Harris, Around Washington Square: an Illustrated History of Greenwich Village&nbsp;(Baltimore, MD: Johns Hopkins University Press, 2003), 7-9.</p>
+</div>
+<div>
+<p id="ftnt4">[4] &nbsp;Harris, 10.</p>
+</div>
+<div>
+<p id="ftnt5">[5] &nbsp;Harris, 10.</p>
+</div>
+<div>
+<p id="ftnt6">[6] &nbsp;Ibid, 6.</p>
+</div>
+<div>
+<p id="ftnt7">[7] &nbsp;Ibid, 12.</p>
+</div>
+<div>
+<p id="ftnt8">[8] &nbsp;Ibid, 15.</p>
+</div>
+<div>
+<p id="ftnt9">[9] &nbsp;Harris, 14.</p>
+</div>
+<div>
+<p id="ftnt10">[10] &nbsp;Flint, 67.</p>
+</div>
+<div>
+<p id="ftnt11">[11] &nbsp;Harris, 15.</p>
+</div>
+<div>
+<p id="ftnt12">[12] &nbsp;Ibid, 88.</p>
+</div>
+<div>
+<p id="ftnt13">[13] &nbsp;Flint, 69.</p>
+</div>
+<div>
+<p id="ftnt14">[14] &nbsp;Harris, 18-21.</p>
+</div>
+<div>
+<p id="ftnt15">[15] &nbsp;Ibid, 62-63.</p>
+</div>
+<div>
+<p id="ftnt16">[16] &nbsp;Harris, 54.</p>
+</div>
+<div>
+<p id="ftnt17">[17] &nbsp;Brown, 196.</p>
+</div>
+<div>
+<p id="ftnt18">[18] &nbsp;Harris, 89.</p>
+</div>
+<div>
+<p id="ftnt19">[19] &nbsp;Ibid, 131.</p>
+</div>
+<div>
+<p id="ftnt20">[20] &nbsp;Harris, 74-75.</p>
+</div>
+<div>
+<p id="ftnt21">[21] &nbsp;Ibid, 76.</p>
+</div>
+<div>
+<p id="ftnt22">[22] &nbsp;Flint, 68-69.</p>
+</div>
+<div>
+<p id="ftnt23">[23] &nbsp;Ulam, 104.</p>
+</div>
+<div>
+<p id="ftnt24">[24] &nbsp;Harris, 89.</p>
+</div>
+<div>
+<p id="ftnt25">[25] &nbsp;Flint, 68.</p>
+</div>
+<div>
+<p id="ftnt26">[26] &nbsp;&ldquo;Washington Square Arch,&rdquo; Park Information (Official Website of the New York City Department of Parks &amp; Recreation), accessed May 25, 2021, https://www.nycgovparks.org/parks/washington-square-park/monuments/1657.</p>
+</div>
+<div>
+<p id="ftnt27">[27] &nbsp;Brown, 196.</p>
+</div>
+<div>
+<p id="ftnt28">[28] &nbsp;Harris, 75.</p>
+</div>
+<div>
+<p id="ftnt29">[29] &nbsp;Flint, 68-69.</p>
+</div>
+<div>
+<p id="ftnt30">[30] &nbsp;Brown, 197.</p>
+</div>
+<div>
+<p id="ftnt31">[31] &nbsp;Flint, 69.</p>
+</div>
+<div>
+<p id="ftnt32">[32] &nbsp;Harris, 107.</p>
+</div>
+<div>
+<p id="ftnt33">[33] &nbsp;Berthold, 430.</p>
+</div>
+<div>
+<p id="ftnt34">[34] &nbsp;Harris, 131.</p>
+</div>
+<div>
+<p id="ftnt35">[35] &nbsp;Dennis Berthold, &ldquo;Melville, Garibaldi, and the Medusa of Revolution,&rdquo; American Literary History&nbsp;9, no. 3 (1997): pp. 433, http://www.jstor.org/stable/490175.</p>
+</div>
+<div>
+<p id="ftnt36">[36] &nbsp;&ldquo;Alexander Lyman Holley.&rdquo;</p>
+</div>
+<div>
+<p id="ftnt37">[37] &nbsp;&ldquo;ALEXANDER L. HOLLEY.; Interest in Troy in the Proper Site for His Memorial Bust.&rdquo;</p>
+</div>
+<div>
+<p id="ftnt38">[38] &nbsp;Harris, 22.</p>
+</div>
+<div>
+<p id="ftnt39">[39] &nbsp;Flint, 70-71.</p>
+</div>
+<div>
+<p id="ftnt40">[40] &nbsp;Flint, 72-87.</p>
+</div>
+<div>
+<p id="ftnt41">[41] &nbsp;Ibid, 80.</p>
+</div>
+<div>
+<p id="ftnt42">[42] &nbsp;Emily Kies Folpe, It Happened on Washington Square&nbsp;(Baltimore: Johns Hopkins University Press, 2002), 269.</p>
+</div>
+<div>
+<p id="ftnt43">[43] &nbsp;&ldquo;Washington Square Memorial Flagstaff,&rdquo; Park Information (Official Website of the New York City Department of Parks &amp; Recreation), accessed May 25, 2021, https://www.nycgovparks.org/parks/washington-square-park/monuments/1659.</p>
+</div>
+<div>
+<p id="ftnt44">[44] &nbsp;When I first saw it, I mostly really just wanted to touch the sandstone because the red was so bright and the sandstone looked soft, especially in comparison to the cool tones and sharp edges of most glass and steel skyscrapers in the borough. The scale of the giant red cube was mystifying.</p>
+</div>
+<div>
+<p id="ftnt45">[45] &nbsp;Erich Goode, The Taming of New York's Washington Square: a Wild Civility&nbsp;(New York: New York University Press, 2018), 10-11.</p>
+</div>
+<div>
+<p id="ftnt46">[46] &nbsp;Monika Krause, The University against Itself the NYU Strike and the Future of the Academic Workplace (Philadelphia, PA: Temple University Press, 2008), 23.</p>
+</div>
+<div>
+<p id="ftnt47">[47] &nbsp;Rabinowitz, 49-49.</p>
+</div>
+<div>
+<p id="ftnt48">[48] &nbsp;&ldquo;Alexander Lyman Holley.&rdquo; Park Information (Official Website of the New York City Department of Parks &amp; Recreation), accessed May 25, 2021, www.nycgovparks.org/parks/washington-square-park/monuments/735.</p>
+</div>
+<div>
+<p id="ftnt49">[49] &nbsp;The statue is now a popular location for skateboarders to experiment and perform tricks with friends.</p>
+</div>
+<div>
+<p id="ftnt50">[50] &nbsp;&ldquo;Giuseppe Garibaldi,&rdquo; Park Information (Official Website of the New York City Department of Parks &amp; Recreation), accessed May 25, 2021, https://www.nycgovparks.org/parks/washington-square-park/monuments/571.</p>
+</div>
+<div>
+<p id="ftnt51">[51] &nbsp;Flint, 89-90.</p>
+</div>
+<div>
+<p id="ftnt52">[52] &nbsp;Finn.</p>
+</div>
+<div>
+<p id="ftnt53">[53] &nbsp;Ulam, 102-104.</p>
+</div>
+<div>
+<p id="ftnt54">[54] &nbsp;Ibid, 103.</p>
+</div>
+<div>
+<p id="ftnt55">[55] &nbsp;The recent college admissions scandals as well as the recent illegal partying seen in the park can further support this idea.</p>
+</div>]]></content><author><name></name></author><category term="Historical Research" /><summary type="html"><![CDATA[A case study of Washington Square Park and its monuments, considering its historical relevance, setting for the Washington Square Arch, and its still-popular role as a meeting place for the youth of New York City.]]></summary></entry><entry><title type="html">Hello Hydeout</title><link href="http://localhost:4000/2017/06/01/hello-hydeout.html" rel="alternate" type="text/html" title="Hello Hydeout" /><published>2017-06-01T00:00:00-04:00</published><updated>2017-06-01T00:00:00-04:00</updated><id>http://localhost:4000/2017/06/01/hello-hydeout</id><content type="html" xml:base="http://localhost:4000/2017/06/01/hello-hydeout.html"><![CDATA[<p>Hydeout updates the original <a href="https://github.com/poole/hyde">Hyde</a>
+theme for <a href="http://jekyllrb.com">Jekyll</a> 3.x and 4.x and adds new functionality.</p>
+
+<h3 id="keep-it-simple">Keep It Simple</h3>
+
+<p>In keeping with the original Hyde theme, Hydeout aims to keep the overall
+design lightweight and plugin-free. JavaScript is currently limited only
+to Disqus and Google Analytics (and is only loaded if you provide configuration
+variables).</p>
+
+<p>Hydeout makes heavy use of Flexbox in its CSS. If Flexbox is not available,
+the CSS degrades into a single column layout.</p>
+
+<h3 id="customization">Customization</h3>
+
+<p>Hydeout replaces Hyde’s class-based theming with the use
+of the following SASS variables:</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$sidebar-bg-color</span><span class="p">:</span> <span class="mh">#202020</span> <span class="o">!</span><span class="nb">default</span><span class="p">;</span>
+<span class="nv">$sidebar-fg-color</span><span class="p">:</span> <span class="no">white</span> <span class="o">!</span><span class="nb">default</span><span class="p">;</span>
+<span class="nv">$sidebar-sticky</span><span class="p">:</span> <span class="bp">true</span> <span class="o">!</span><span class="nb">default</span><span class="p">;</span>
+<span class="nv">$layout-reverse</span><span class="p">:</span> <span class="bp">false</span> <span class="o">!</span><span class="nb">default</span><span class="p">;</span>
+<span class="nv">$link-color</span><span class="p">:</span> <span class="mh">#268bd2</span> <span class="o">!</span><span class="nb">default</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>To override these variables, create your own <code class="language-plaintext highlighter-rouge">assets/css/main.scss</code> file.
+Define your own variables, then import in Hydeout’s SCSS, like so:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---
+# Jekyll needs front matter for SCSS files
+---
+
+$sidebar-bg-color: #ac4142;
+$link-color: #ac4142;
+$sidebar-sticky: false;
+@import "hydeout";
+</code></pre></div></div>
+
+<p>See the <a href="https://github.com/fongandrew/hydeout/blob/master/_sass/hydeout/_variables.scss">_variables</a> file for other variables
+you can override.</p>
+
+<p>You can also insert custom head tags (e.g. to load your own stylesheets) by
+defining your own <code class="language-plaintext highlighter-rouge">_includes/custom-head.html</code> or insert tags at the end
+of the body (e.g. for custom JS) by defining your own
+<code class="language-plaintext highlighter-rouge">_includes/custom-foot.html</code>.</p>
+
+<h3 id="new-features">New Features</h3>
+
+<ul>
+  <li>
+    <p>Hydeout also adds a new tags page (accessible in the sidebar) and a new
+“category” layout for dedicated category pages.</p>
+  </li>
+  <li>
+    <p>Category pages are automatically added to the sidebar. All other pages
+must have <code class="language-plaintext highlighter-rouge">sidebar_link: true</code> in their front matter to show up in
+the sidebar.</p>
+  </li>
+  <li>
+    <p>A simple redirect-to-Google search is available. If you want to use
+Google Custom Search or Algolia or something with more involved,
+override the <code class="language-plaintext highlighter-rouge">search.html</code>.</p>
+  </li>
+  <li>
+    <p>Disqus integration is ready out of the box. Just add the following to
+your config file:</p>
+
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">disqus</span><span class="pi">:</span>
+  <span class="na">shortname</span><span class="pi">:</span> <span class="s">my-disqus-shortname</span>
+</code></pre></div>    </div>
+
+    <p>If you don’t want Disqus or want to use something else, override
+<code class="language-plaintext highlighter-rouge">comments.html</code>.</p>
+  </li>
+  <li>
+    <p>For Google Analytics support, define a <code class="language-plaintext highlighter-rouge">google_analytics</code> variable with
+your property ID in your config file.</p>
+  </li>
+</ul>
+
+<p>There’s also a bunch of minor tweaks and adjustments throughout the
+theme. Hope this works for you!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Hydeout updates the original Hyde theme for Jekyll 3.x and 4.x and adds new functionality. Keep It Simple In keeping with the original Hyde theme, Hydeout aims to keep the overall design lightweight and plugin-free. JavaScript is currently limited only to Disqus and Google Analytics (and is only loaded if you provide configuration variables). Hydeout makes heavy use of Flexbox in its CSS. If Flexbox is not available, the CSS degrades into a single column layout. Customization Hydeout replaces Hyde’s class-based theming with the use of the following SASS variables: $sidebar-bg-color: #202020 !default; $sidebar-fg-color: white !default; $sidebar-sticky: true !default; $layout-reverse: false !default; $link-color: #268bd2 !default; To override these variables, create your own assets/css/main.scss file. Define your own variables, then import in Hydeout’s SCSS, like so: --- # Jekyll needs front matter for SCSS files --- $sidebar-bg-color: #ac4142; $link-color: #ac4142; $sidebar-sticky: false; @import "hydeout"; See the _variables file for other variables you can override. You can also insert custom head tags (e.g. to load your own stylesheets) by defining your own _includes/custom-head.html or insert tags at the end of the body (e.g. for custom JS) by defining your own _includes/custom-foot.html. New Features Hydeout also adds a new tags page (accessible in the sidebar) and a new “category” layout for dedicated category pages. Category pages are automatically added to the sidebar. All other pages must have sidebar_link: true in their front matter to show up in the sidebar. A simple redirect-to-Google search is available. If you want to use Google Custom Search or Algolia or something with more involved, override the search.html. Disqus integration is ready out of the box. Just add the following to your config file: disqus: shortname: my-disqus-shortname If you don’t want Disqus or want to use something else, override comments.html. For Google Analytics support, define a google_analytics variable with your property ID in your config file. There’s also a bunch of minor tweaks and adjustments throughout the theme. Hope this works for you!]]></summary></entry><entry><title type="html">Introducing Hyde</title><link href="http://localhost:4000/2013/12/28/introducing-hyde.html" rel="alternate" type="text/html" title="Introducing Hyde" /><published>2013-12-28T00:00:00-05:00</published><updated>2013-12-28T00:00:00-05:00</updated><id>http://localhost:4000/2013/12/28/introducing-hyde</id><content type="html" xml:base="http://localhost:4000/2013/12/28/introducing-hyde.html"><![CDATA[<p>Hyde is a brazen two-column <a href="http://jekyllrb.com">Jekyll</a> theme that pairs a prominent sidebar with uncomplicated content. It’s based on <a href="http://getpoole.com">Poole</a>, the Jekyll butler.</p>
+
+<h3 id="built-on-poole">Built on Poole</h3>
+
+<p>Poole is the Jekyll Butler, serving as an upstanding and effective foundation for Jekyll themes by <a href="https://twitter.com/mdo">@mdo</a>. Poole, and every theme built on it (like Hyde here) includes the following:</p>
+
+<ul>
+  <li>Complete Jekyll setup included (layouts, config, <a href="/404">404</a>, <a href="/feed.xml">RSS feed</a>, posts, and <a href="/about">example page</a>)</li>
+  <li>Mobile friendly design and development</li>
+  <li>Easily scalable text and component sizing with <code class="language-plaintext highlighter-rouge">rem</code> units in the CSS</li>
+  <li>Support for a wide gamut of HTML elements</li>
+  <li>Related posts (time-based, because Jekyll) below each post</li>
+  <li>Syntax highlighting, courtesy Pygments (the Python-based code snippet highlighter)</li>
+</ul>
+
+<h3 id="hyde-features">Hyde features</h3>
+
+<p>In addition to the features of Poole, Hyde adds the following:</p>
+
+<ul>
+  <li>Sidebar includes support for textual modules and a dynamically generated navigation with active link support</li>
+  <li>Two orientations for content and sidebar, default (left sidebar) and <a href="https://github.com/poole/hyde#reverse-layout">reverse</a> (right sidebar), available via <code class="language-plaintext highlighter-rouge">&lt;body&gt;</code> classes</li>
+  <li><a href="https://github.com/poole/hyde#themes">Eight optional color schemes</a>, available via <code class="language-plaintext highlighter-rouge">&lt;body&gt;</code> classes</li>
+</ul>
+
+<p><a href="https://github.com/poole/hyde#readme">Head to the readme</a> to learn more.</p>
+
+<h3 id="browser-support">Browser support</h3>
+
+<p>Hyde is by preference a forward-thinking project. In addition to the latest versions of Chrome, Safari (mobile and desktop), and Firefox, it is only compatible with Internet Explorer 9 and above.</p>
+
+<h3 id="download">Download</h3>
+
+<p>Hyde is developed on and hosted with GitHub. Head to the <a href="https://github.com/poole/hyde">GitHub repository</a> for downloads, bug reports, and features requests.</p>
+
+<p>Thanks!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Hyde is a brazen two-column Jekyll theme that pairs a prominent sidebar with uncomplicated content. It’s based on Poole, the Jekyll butler. Built on Poole Poole is the Jekyll Butler, serving as an upstanding and effective foundation for Jekyll themes by @mdo. Poole, and every theme built on it (like Hyde here) includes the following: Complete Jekyll setup included (layouts, config, 404, RSS feed, posts, and example page) Mobile friendly design and development Easily scalable text and component sizing with rem units in the CSS Support for a wide gamut of HTML elements Related posts (time-based, because Jekyll) below each post Syntax highlighting, courtesy Pygments (the Python-based code snippet highlighter) Hyde features In addition to the features of Poole, Hyde adds the following: Sidebar includes support for textual modules and a dynamically generated navigation with active link support Two orientations for content and sidebar, default (left sidebar) and reverse (right sidebar), available via &lt;body&gt; classes Eight optional color schemes, available via &lt;body&gt; classes Head to the readme to learn more. Browser support Hyde is by preference a forward-thinking project. In addition to the latest versions of Chrome, Safari (mobile and desktop), and Firefox, it is only compatible with Internet Explorer 9 and above. Download Hyde is developed on and hosted with GitHub. Head to the GitHub repository for downloads, bug reports, and features requests. Thanks!]]></summary></entry><entry><title type="html">Example content</title><link href="http://localhost:4000/2012/02/07/example-content.html" rel="alternate" type="text/html" title="Example content" /><published>2012-02-07T00:00:00-05:00</published><updated>2012-02-07T00:00:00-05:00</updated><id>http://localhost:4000/2012/02/07/example-content</id><content type="html" xml:base="http://localhost:4000/2012/02/07/example-content.html"><![CDATA[<div class="message">
+  Howdy! This is an example blog post that shows several types of HTML content supported in this theme.
+</div>
+
+<p>Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. <em>Aenean eu leo quam.</em> Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
+
+<blockquote>
+  <p>Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+</blockquote>
+
+<p>Etiam porta <strong>sem malesuada magna</strong> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+
+<h2 id="inline-html-elements">Inline HTML elements</h2>
+
+<p>HTML defines a long list of available inline tags, a complete list of which can be found on the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">Mozilla Developer Network</a>.</p>
+
+<ul>
+  <li><strong>To bold text</strong>, use <code class="language-plaintext highlighter-rouge">&lt;strong&gt;</code>.</li>
+  <li><em>To italicize text</em>, use <code class="language-plaintext highlighter-rouge">&lt;em&gt;</code>.</li>
+  <li>Abbreviations, like <abbr title="HyperText Markup Langage">HTML</abbr> should use <code class="language-plaintext highlighter-rouge">&lt;abbr&gt;</code>, with an optional <code class="language-plaintext highlighter-rouge">title</code> attribute for the full phrase.</li>
+  <li>Citations, like <cite>— Mark otto</cite>, should use <code class="language-plaintext highlighter-rouge">&lt;cite&gt;</code>.</li>
+  <li><del>Deleted</del> text should use <code class="language-plaintext highlighter-rouge">&lt;del&gt;</code> and <ins>inserted</ins> text should use <code class="language-plaintext highlighter-rouge">&lt;ins&gt;</code>.</li>
+  <li>Superscript <sup>text</sup> uses <code class="language-plaintext highlighter-rouge">&lt;sup&gt;</code> and subscript <sub>text</sub> uses <code class="language-plaintext highlighter-rouge">&lt;sub&gt;</code>.</li>
+</ul>
+
+<p>Most of these elements are styled by browsers with few modifications on our part.</p>
+
+<h2 id="heading">Heading</h2>
+
+<p>Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+
+<h3 id="code">Code</h3>
+
+<p>Cum sociis natoque penatibus et magnis dis <code class="language-plaintext highlighter-rouge">code element</code> montes, nascetur ridiculus mus.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// Example can be run directly in your JavaScript console
+</span>
+
+<span class="c1">// Create a function that takes two arguments and returns the sum of those arguments
+</span>
+<span class="kd">var</span> <span class="nx">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">b</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">return a + b</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="c1">// Call the function
+</span>
+<span class="nx">adder</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+<span class="c1">// &gt; 8</span></code></pre></figure>
+
+<p>Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
+
+<h3 id="gists-via-github-pages">Gists via GitHub Pages</h3>
+
+<p>Vestibulum id ligula porta felis euismod semper. Nullam quis risus eget urna mollis ornare vel eu leo. Donec sed odio dui.</p>
+
+<noscript><pre>400: Invalid request</pre></noscript>
+<script src="https://gist.github.com/5555251.js?file=gist.md"> </script>
+
+<p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec sed odio dui. Vestibulum id ligula porta felis euismod semper.</p>
+
+<h3 id="lists">Lists</h3>
+
+<p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+
+<ul>
+  <li>Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</li>
+  <li>Donec id elit non mi porta gravida at eget metus.</li>
+  <li>Nulla vitae elit libero, a pharetra augue.</li>
+</ul>
+
+<p>Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.</p>
+
+<ol>
+  <li>Vestibulum id ligula porta felis euismod semper.</li>
+  <li>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</li>
+  <li>Maecenas sed diam eget risus varius blandit sit amet non magna.</li>
+</ol>
+
+<p>Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.</p>
+
+<dl>
+  <dt>HyperText Markup Language (HTML)</dt>
+  <dd>The language used to describe and define the content of a Web page</dd>
+
+  <dt>Cascading Style Sheets (CSS)</dt>
+  <dd>Used to describe the appearance of Web content</dd>
+
+  <dt>JavaScript (JS)</dt>
+  <dd>The programming language used to build advanced Web sites and applications</dd>
+</dl>
+
+<p>Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo.</p>
+
+<h3 id="images">Images</h3>
+
+<p>Quisque consequat sapien eget quam rhoncus, sit amet laoreet diam tempus. Aliquam aliquam metus erat, a pulvinar turpis suscipit at.</p>
+
+<p><img src="https://placehold.it/800x400" alt="placeholder" title="Large example image" />
+<img src="https://placehold.it/400x200" alt="placeholder" title="Medium example image" />
+<img src="https://placehold.it/200x200" alt="placeholder" title="Small example image" /></p>
+
+<h3 id="tables">Tables</h3>
+
+<p>Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Upvotes</th>
+      <th>Downvotes</th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <td>Totals</td>
+      <td>21</td>
+      <td>23</td>
+    </tr>
+  </tfoot>
+  <tbody>
+    <tr>
+      <td>Alice</td>
+      <td>10</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>Bob</td>
+      <td>4</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>Charlie</td>
+      <td>7</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo.</p>
+
+<hr />
+
+<p>Want to see something else added? <a href="https://github.com/poole/poole/issues/new">Open an issue.</a></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Howdy! This is an example blog post that shows several types of HTML content supported in this theme. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum. Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit. Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur. Inline HTML elements HTML defines a long list of available inline tags, a complete list of which can be found on the Mozilla Developer Network. To bold text, use &lt;strong&gt;. To italicize text, use &lt;em&gt;. Abbreviations, like HTML should use &lt;abbr&gt;, with an optional title attribute for the full phrase. Citations, like — Mark otto, should use &lt;cite&gt;. Deleted text should use &lt;del&gt; and inserted text should use &lt;ins&gt;. Superscript text uses &lt;sup&gt; and subscript text uses &lt;sub&gt;. Most of these elements are styled by browsers with few modifications on our part. Heading Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Code Cum sociis natoque penatibus et magnis dis code element montes, nascetur ridiculus mus. // Example can be run directly in your JavaScript console // Create a function that takes two arguments and returns the sum of those arguments var adder = new Function("a", "b", "return a + b"); // Call the function adder(2, 6); // &gt; 8 Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa. Gists via GitHub Pages Vestibulum id ligula porta felis euismod semper. Nullam quis risus eget urna mollis ornare vel eu leo. Donec sed odio dui. 400: Invalid request Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec sed odio dui. Vestibulum id ligula porta felis euismod semper. Lists Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Nulla vitae elit libero, a pharetra augue. Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. HyperText Markup Language (HTML) The language used to describe and define the content of a Web page Cascading Style Sheets (CSS) Used to describe the appearance of Web content JavaScript (JS) The programming language used to build advanced Web sites and applications Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo. Images Quisque consequat sapien eget quam rhoncus, sit amet laoreet diam tempus. Aliquam aliquam metus erat, a pulvinar turpis suscipit at. Tables Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Name Upvotes Downvotes Totals 21 23 Alice 10 11 Bob 4 3 Charlie 7 9 Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo. Want to see something else added? Open an issue.]]></summary></entry><entry><title type="html">What’s Jekyll?</title><link href="http://localhost:4000/2012/02/06/whats-jekyll.html" rel="alternate" type="text/html" title="What’s Jekyll?" /><published>2012-02-06T00:00:00-05:00</published><updated>2012-02-06T00:00:00-05:00</updated><id>http://localhost:4000/2012/02/06/whats-jekyll</id><content type="html" xml:base="http://localhost:4000/2012/02/06/whats-jekyll.html"><![CDATA[<p><a href="http://jekyllrb.com">Jekyll</a> is a static site generator, an open-source tool for creating simple yet powerful websites of all shapes and sizes. From <a href="https://github.com/mojombo/jekyll/blob/master/README.markdown">the project’s readme</a>:</p>
+
+<blockquote>
+  <p>Jekyll is a simple, blog aware, static site generator. It takes a template directory […] and spits out a complete, static website suitable for serving with Apache or your favorite web server. This is also the engine behind GitHub Pages, which you can use to host your project’s page or blog right here from GitHub.</p>
+</blockquote>
+
+<p>It’s an immensely useful tool and one we encourage you to use here with Hyde.</p>
+
+<p>Find out more by <a href="https://github.com/mojombo/jekyll">visiting the project on GitHub</a>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Jekyll is a static site generator, an open-source tool for creating simple yet powerful websites of all shapes and sizes. From the project’s readme: Jekyll is a simple, blog aware, static site generator. It takes a template directory […] and spits out a complete, static website suitable for serving with Apache or your favorite web server. This is also the engine behind GitHub Pages, which you can use to host your project’s page or blog right here from GitHub. It’s an immensely useful tool and one we encourage you to use here with Hyde. Find out more by visiting the project on GitHub.]]></summary></entry><entry><title type="html">Markup: Syntax Highlighting</title><link href="http://localhost:4000/2012/02/05/markup-syntax-highlighting.html" rel="alternate" type="text/html" title="Markup: Syntax Highlighting" /><published>2012-02-05T00:00:00-05:00</published><updated>2012-02-05T10:27:01-05:00</updated><id>http://localhost:4000/2012/02/05/markup-syntax-highlighting</id><content type="html" xml:base="http://localhost:4000/2012/02/05/markup-syntax-highlighting.html"><![CDATA[<p>Syntax highlighting is a feature that displays source code, in different colors and fonts according to the category of terms. This feature facilitates writing in a structured language such as a programming language or a markup language as both structures and syntax errors are visually distinct. Highlighting does not affect the meaning of the text itself; it is intended only for human readers.<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup></p>
+
+<h2 id="gfm-code-blocks">GFM Code Blocks</h2>
+
+<p>GitHub Flavored Markdown <a href="https://help.github.com/articles/creating-and-highlighting-code-blocks/">fenced code blocks</a> are supported by default with Jekyll. You may need to update your <code class="language-plaintext highlighter-rouge">_config.yml</code> file to enable them if you’re using an older version.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kramdown</span><span class="pi">:</span>
+  <span class="na">input</span><span class="pi">:</span> <span class="s">GFM</span>
+</code></pre></div></div>
+
+<p>Here’s an example of a CSS code snippet written in GFM:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">#container</span> <span class="p">{</span>
+  <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="m">-240px</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Yet another code snippet for demonstration purposes:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Jekyll</span>
+  <span class="k">class</span> <span class="nc">TagIndex</span> <span class="o">&lt;</span> <span class="no">Page</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+      <span class="vi">@site</span> <span class="o">=</span> <span class="n">site</span>
+      <span class="vi">@base</span> <span class="o">=</span> <span class="n">base</span>
+      <span class="vi">@dir</span> <span class="o">=</span> <span class="n">dir</span>
+      <span class="vi">@name</span> <span class="o">=</span> <span class="s1">'index.html'</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">process</span><span class="p">(</span><span class="vi">@name</span><span class="p">)</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">read_yaml</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s1">'_layouts'</span><span class="p">),</span> <span class="s1">'tag_index.html'</span><span class="p">)</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">data</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
+      <span class="n">tag_title_prefix</span> <span class="o">=</span> <span class="n">site</span><span class="p">.</span><span class="nf">config</span><span class="p">[</span><span class="s1">'tag_title_prefix'</span><span class="p">]</span> <span class="o">||</span> <span class="s1">'Tagged: '</span>
+      <span class="n">tag_title_suffix</span> <span class="o">=</span> <span class="n">site</span><span class="p">.</span><span class="nf">config</span><span class="p">[</span><span class="s1">'tag_title_suffix'</span><span class="p">]</span> <span class="o">||</span> <span class="s1">'&amp;#8211;'</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">data</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="n">tag_title_prefix</span><span class="si">}#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">"</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">data</span><span class="p">[</span><span class="s1">'description'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"An archive of posts tagged </span><span class="si">#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">."</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="jekyll-highlight-liquid-tag">Jekyll Highlight Liquid Tag</h2>
+
+<p>Jekyll also has built-in support for syntax highlighting of code snippets using either Rouge or Pygments, using a dedicated Liquid tag as follows:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{%</span><span class="w"> </span><span class="nt">highlight</span><span class="w"> </span>scss<span class="w"> </span><span class="p">%}</span>
+.highlight {
+  margin: 0;
+  padding: 1em;
+  font-family: $monospace;
+  font-size: $type-size-7;
+  line-height: 1.8;
+}
+<span class="p">{%</span><span class="w"> </span><span class="nt">endhighlight</span><span class="w"> </span><span class="p">%}</span>
+</code></pre></div></div>
+
+<p>And the output will look like this:</p>
+
+<figure class="highlight"><pre><code class="language-scss" data-lang="scss"><span class="nc">.highlight</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">1em</span><span class="p">;</span>
+  <span class="nl">font-family</span><span class="p">:</span> <span class="nv">$monospace</span><span class="p">;</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="nv">$type-size-7</span><span class="p">;</span>
+  <span class="nl">line-height</span><span class="p">:</span> <span class="m">1</span><span class="mi">.8</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Here’s an example of a code snippet using the Liquid tag and <code class="language-plaintext highlighter-rouge">linenos</code> enabled.</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="code"><pre><span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">"pagination"</span> <span class="na">role=</span><span class="s">"navigation"</span><span class="nt">&gt;</span>
+  {% if page.previous %}
+    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"{{ site.url }}{{ page.previous.url }}"</span> <span class="na">class=</span><span class="s">"btn"</span> <span class="na">title=</span><span class="s">"{{ page.previous.title }}"</span><span class="nt">&gt;</span>Previous article<span class="nt">&lt;/a&gt;</span>
+  {% endif %}
+  {% if page.next %}
+    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"{{ site.url }}{{ page.next.url }}"</span> <span class="na">class=</span><span class="s">"btn"</span> <span class="na">title=</span><span class="s">"{{ page.next.title }}"</span><span class="nt">&gt;</span>Next article<span class="nt">&lt;/a&gt;</span>
+  {% endif %}
+<span class="nt">&lt;/nav&gt;</span><span class="c">&lt;!-- /.pagination --&gt;</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<h2 id="code-blocks-in-lists">Code Blocks in Lists</h2>
+
+<p>Indentation matters. Be sure the indent of the code block aligns with the first non-space character after the list item marker (e.g., <code class="language-plaintext highlighter-rouge">1.</code>). Usually this will mean indenting 3 spaces instead of 4.</p>
+
+<ol>
+  <li>Do step 1.</li>
+  <li>
+    <p>Now do this:</p>
+
+    <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
+<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Now you can do this.</li>
+</ol>
+
+<h2 id="github-gist-embed">GitHub Gist Embed</h2>
+
+<p>GitHub Gist embeds can also be used:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://gist.github.com/mmistakes/77c68fbb07731a456805a7b473f47841.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>Which outputs as:</p>
+
+<script src="https://gist.github.com/mmistakes/77c68fbb07731a456805a7b473f47841.js"></script>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="http://en.wikipedia.org/wiki/Syntax_highlighting">http://en.wikipedia.org/wiki/Syntax_highlighting</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name></name></author><category term="code" /><category term="syntax highlighting" /><summary type="html"><![CDATA[Post displaying the various ways one can highlight code blocks with Jekyll. Some options include standard Markdown, GitHub Flavored Markdown, and Jekyll's `{% highlight %}` tag.]]></summary></entry><entry><title type="html">Layout: Excerpt (Defined)</title><link href="http://localhost:4000/layout/2012/02/04/layout-excerpt-defined.html" rel="alternate" type="text/html" title="Layout: Excerpt (Defined)" /><published>2012-02-04T00:00:00-05:00</published><updated>2012-02-04T12:43:31-05:00</updated><id>http://localhost:4000/layout/2012/02/04/layout-excerpt-defined</id><content type="html" xml:base="http://localhost:4000/layout/2012/02/04/layout-excerpt-defined.html"><![CDATA[<p>This is the start of the post content.</p>
+
+<p>This paragraph should be absent from an index page where <code class="language-plaintext highlighter-rouge">post.excerpt</code> is shown.</p>]]></content><author><name></name></author><category term="Layout" /><category term="content" /><category term="excerpt" /><category term="layout" /><summary type="html"><![CDATA[This is a user-defined post excerpt. It should be displayed in place of the auto-generated excerpt or post content on index pages.]]></summary></entry></feed>

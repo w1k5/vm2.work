@@ -1,0 +1,22 @@
+<div class="timeline-area">
+		<div class="all-timelines">
+			{% for moment in site.data.profile.experience %}
+			<!--SINGLE TIMELINE-->
+			<div class="single-timeline d-flex-2">
+				<div class="timeline-blank"></div>
+				<div class="timeline-text d-flex-2">
+					<span>
+						<h6><div class="t-square"></div>{{ moment.start }}</h6> — {{ moment.experience }}
+						{% if moment.details != null %}
+						<ul style="margin: 0;">
+							{% for detail in moment.details %}
+							<li><em>{{ detail }}</em></li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+					</span>
+				
+				</div>
+			</div>
+			{% endfor %}
+	</div>

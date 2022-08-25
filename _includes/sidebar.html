@@ -1,0 +1,17 @@
+<div id="sidebar">
+  <header>
+    <input type="checkbox" id="nav-check">
+    <h1 class="site-title">
+      <a href="{{ "/" | relative_url }}">
+        {{ site.title }}
+      </a>
+    </h1>
+  {% include sidebar-nav-links.html %}
+
+  {% if site.version %}
+    <span class="site-version">Currently v{{ site.version }}</span>
+  {% endif %}
+  </header>
+
+  {% include copyright.html %}
+</div>
