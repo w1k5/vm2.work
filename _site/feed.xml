@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-08-23T22:25:05-04:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">vm2.work</title><subtitle>Recent graduate from Williams College with a double major in Computer Science and Art History</subtitle><entry><title type="html">New York City’s Real Estate &amp;amp; the Strength of a Name</title><link href="http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name.html" rel="alternate" type="text/html" title="New York City’s Real Estate &amp;amp; the Strength of a Name" /><published>2022-05-22T00:00:00-04:00</published><updated>2022-05-22T00:00:00-04:00</updated><id>http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name</id><content type="html" xml:base="http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name.html"><![CDATA[<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-08-24T22:37:15-04:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">vm2.work</title><subtitle>Recent graduate from Williams College with a double major in Computer Science and Art History</subtitle><entry><title type="html">New York City’s Real Estate &amp;amp; the Strength of a Name</title><link href="http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name.html" rel="alternate" type="text/html" title="New York City’s Real Estate &amp;amp; the Strength of a Name" /><published>2022-05-22T00:00:00-04:00</published><updated>2022-05-22T00:00:00-04:00</updated><id>http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name</id><content type="html" xml:base="http://localhost:4000/scientific%20research/2022/05/22/strength-of-a-name.html"><![CDATA[<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
 <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<p>The original paper can be found <a target="_blank" href="/images/strength-of-a-name/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/nyc-realestate">here</a>.</p>
+<p>The original paper can be found <a target="_blank" href="http://localhost:4000/images/strength-of-a-name/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/nyc-realestate">here</a>.</p>
 
 <h1 id="sec:intro">Introduction</h1>
 <p>In 2022, the value of the NYC housing market was estimated at $3.51 trillion, and it appears that the market is not expected to stop growing anytime soon. The idea that real estate is a wise investment is a heavily debated topic, especially as young people grow more and more hesitant towards making such a purchase; but if one is to make it, it should be a wise one that functions more like an investment.</p>
@@ -41,7 +41,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <p>As described in section ACE &amp; Backdoor Adjustment, I will use backdoor adjustment in order to calculate the relationship between my treatment and outcome variable. The code for backdoor adjustment was written up in Python3 and featured heavy use of <code>statsmodels.api}</code> in order to calculate a Gaussian model for the relationship between my treatment variables and the outcome. The code for this is featured in <code>backdoor.py</code>, in the function <code>backdoor_adjustment</code>. In order to compute the corresponding confidence intervals, 200 bootstraps were features in the <code>compute_confidence_intervals_backdoor</code> function, with an alpha value of 0.05 in order to assess the variability of the distribution of results found from the backdoor adjustment processing. This process was run in a for loop for each my treatment variables, adjusting the adjustment set as needed.</p>
 <h1 id="sec:results">Results</h1>
 <p>Having run a Greedy Equivalence Search in Tetrad, the graph featured in Figure 1 was found. This graph, while complex, can be used to find the backdoor adjustment set by grabbing all of the parents of the outcome variable, with the exception of the treatment variable being tested, whether it be <strong>BRONX</strong>, <strong>BROOKLYN</strong>, <strong>MANHATTAN</strong>, <strong>STATEN_ISLAND</strong>, and <strong>QUEENS</strong> in a given iteration.</p>
-<center><div class="figure"><img style="width: 70%" src="/images/strength-of-a-name/graphviz.png" alt="Graph found from Greedy Equivalence Search" /><h3>Figure 1</h3></div></center>
+<center><div class="figure"><img style="width: 70%" src="http://localhost:4000/images/strength-of-a-name/graphviz.png" alt="Graph found from Greedy Equivalence Search" /><h3>Figure 1</h3></div></center>
 <p>Given this graph, the parents and children of the <strong>SALE_PRICE</strong>– with the exception of the treatment variable being tested– will be used as the backdoor adjustment set for each of the treatment variables. This means that four of the boroughs will be included in the backdoor adjustment set, alongside <strong>PERCENT_WHITE</strong> and <strong>POPULATION_DENSITY</strong> Furthermore, the data yielding from the backdoor adjustment processes featured in <code>backdoor.py</code>, is presented in Figure 4.</p>
 <h3>Figure 2</h3>
 <table><thead><tr class="header"><th align="left">Treatment</th><th align="left">Average Causal Effect</th><th align="left">Confidence Interval</th></tr></thead><tbody><tr class="odd"><td align="left">BROOKLYN</td><td align="left">-1759368.766</td><td align="left">(-2204619.097, -1350677.114)</td></tr><tr class="even"><td align="left">STATEN_ISLAND</td><td align="left">-3242318.034</td><td align="left">(-3849001.805, -2750577.017)</td></tr><tr class="odd"><td align="left">BRONX</td><td align="left">-2124969.992</td><td align="left">(-2517757.840, -1777306.324)</td></tr><tr class="even"><td align="left">QUEENS</td><td align="left">-2376241.155</td><td align="left">(-2856924.173, -1857450.184)</td></tr><tr class="odd"><td align="left">MANHATTAN</td><td align="left">12704278.334</td><td align="left">(10508549.500, 15480349.762)</td></tr></tbody></table>
@@ -67,7 +67,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <p>NYC Department of Finance. New york city sales data from may 2021 - april 2022. URL <a href="https://www1.nyc.gov/site/finance/taxes/property-rolling-sales-data.page">https://www1.nyc.gov/site/finance/taxes/property-rolling-sales-data</a>. [Online; Accessed 05.09.2021].</p>
 <p>Judea Pearl. Causality. Cambridge University Press, 2009.</p>
 <p>Joseph Ramsey, Madelyn Glymour, Ruben Sanchez-Romero, and Clark Glymour. A million variables and more: the fast greedy equivalence search algorithm for learning high-dimensional graphical causal models, with an application to functional magnetic resonance images. International Journal of Data Science and Analytics, 3(2):121&ndash;129, 2017.</p>
-<p>Wikipedia contributors. List of new york city subway stations, 2022. URL <a href="https://en.wikipedia.org/wiki/List_of_New_York_City_Subway_stations">https://en.wikipedia.org/wiki/List_of_New_York_City_Subway_stations</a>. [Online; Accessed 05.09.2021].</p>]]></content><author><name></name></author><category term="Scientific Research" /><summary type="html"><![CDATA[Empirical study focusing on the causal analysis of the relationship between property sale prices and the location of a property, accounting for the majority of the advantages relating to a given borough, quantifying the value of a borough.]]></summary></entry><entry><title type="html">Tit-for-tat’s Lack of Robustness Against Strategic Clients (Again)</title><link href="http://localhost:4000/scientific%20research/2022/05/19/bittorrent.html" rel="alternate" type="text/html" title="Tit-for-tat’s Lack of Robustness Against Strategic Clients (Again)" /><published>2022-05-19T00:00:00-04:00</published><updated>2022-05-19T00:00:00-04:00</updated><id>http://localhost:4000/scientific%20research/2022/05/19/bittorrent</id><content type="html" xml:base="http://localhost:4000/scientific%20research/2022/05/19/bittorrent.html"><![CDATA[<p>The original paper can be found <a target="_blank" href="/images/bittorrent/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/proving-bittorrent">here</a>.</p>
+<p>Wikipedia contributors. List of new york city subway stations, 2022. URL <a href="https://en.wikipedia.org/wiki/List_of_New_York_City_Subway_stations">https://en.wikipedia.org/wiki/List_of_New_York_City_Subway_stations</a>. [Online; Accessed 05.09.2021].</p>]]></content><author><name></name></author><category term="Scientific Research" /><summary type="html"><![CDATA[Empirical study focusing on the causal analysis of the relationship between property sale prices and the location of a property, accounting for the majority of the advantages relating to a given borough, quantifying the value of a borough.]]></summary></entry><entry><title type="html">Tit-for-tat’s Lack of Robustness Against Strategic Clients (Again)</title><link href="http://localhost:4000/scientific%20research/2022/05/19/bittorrent.html" rel="alternate" type="text/html" title="Tit-for-tat’s Lack of Robustness Against Strategic Clients (Again)" /><published>2022-05-19T00:00:00-04:00</published><updated>2022-05-19T00:00:00-04:00</updated><id>http://localhost:4000/scientific%20research/2022/05/19/bittorrent</id><content type="html" xml:base="http://localhost:4000/scientific%20research/2022/05/19/bittorrent.html"><![CDATA[<p>The original paper can be found <a target="_blank" href="http://localhost:4000/images/bittorrent/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/proving-bittorrent">here</a>.</p>
 
 <h1>Introduction</h1>
 <p>Peer-to-peer (P2P) networks are systems of interacting components with processing and receiving capacities, connected directly to other components without a centralized entity which controls the allocation of resources between peers. These networks exist in the banking industry, the electric power industry, as well as in the world of online file-sharing. This project will be engaging in an empirical study regarding different strategies for specific peers to utilize when engaging with their peers, with some theoretical attempts at explaining the results; in the implementation, there will be a focus on file-sharing systems.</p>
@@ -75,12 +75,12 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <p>In this project, a provided simulator written up in Python3 will be utilized in order to implement different agents. BitTorrent will be implemented in collaboration with FairTorrent in order to emphasize the respective strengths between the two protocols, and this knowledge is then used in order to create a similar protocol that may similarly exploit BitTorrent and/or FairTorrent in order to yield lower average download times for the given agent.</p>
 <h1>Preliminaries</h1>
 <p>P2P networks are a common method for recourse distribution; theoretically, these sorts of networks can be expressed as a repeated game, where uploading and downloading have their own respective utilities. This game resembles the prisoner&rsquo;s dilemma, pictured in Figure 1, where there are two options for each player: either the agent can cooperate (<em>C</em>) or dissent (<em>D</em>). In the context of this paper, assume that the benefit of receiving the file is 3 and the cost of uploading is 1. The __ symbols are representative of whatever move the given agent had ended up with as a result of the automata&rsquo;s processes regarding the opponent&rsquo;s moves.</p>
-<div><center><img style="width: 20rem;" src="/images/bittorrent/matrix.png" />
+<div><center><img style="width: 20rem;" src="http://localhost:4000/images/bittorrent/matrix.png" />
 <h3>Figure 1: Payoff Matrix for P2P Game</h3>
 </center></div>
 <p>This payoff matrix is constant between two peers, but the strategies which a given peer can use to move about this matrix can vary, especially given that upload bandwidth is limited for a given peer&ndash; meaning that the number of peers that a given agent can cooperate with in a given round is limited.</p>
 <p>One approach is tit-for-tat: a strategy which assumes corporation between two players from the start. In the rounds following, the given player will do what their opponent did in the following round. It can be represented as a push-down automata via the following diagram:</p>
-<div><center><img style="width: 20rem;" src="/images/bittorrent/dfa.png" />
+<div><center><img style="width: 20rem;" src="http://localhost:4000/images/bittorrent/dfa.png" />
 <h3>Figure 2: DFA for Tit-for-Tat</h3>
 </center></div>
 <h1>Related Work</h1>
@@ -207,7 +207,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <center><h3>Figure 3: Completion Rounds for BitTorrent,9 Freerider,1</h3></center>
 <p>In Figure 4, a visual is provided to highlight the mutual transactions that occur between the BitTorrent, as seen by the darker blocks between them. The entirety of the Freerider row is white, due to its lack of uploading to any other peer; however, due to BitTorrent&rsquo;s optimistic unchokes, the Freerider does end up downloading from the BitTorrents as pictured by the grey squares pictured in the Freerider column, but not as often as the other BitTorrents end up downloading from their fellow BitTorrents, as seen by their darker shade. This difference highlights Freerider&rsquo;s dependence on the <code>Seed</code>, which is heavily constrained by its randomized approach and limited bandwidth.</p>
 <center>
-<div><img src="/images/bittorrent/bittorrent_Freerider.png" />
+<div><img src="http://localhost:4000/images/bittorrent/bittorrent_Freerider.png" />
 <h3> Figure 4: Heatmap generated by BitTorrent,9 Freerider,1</h3>
 </div>
 </center>
@@ -277,7 +277,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <center><h3>Figure 5: Completion Rounds for FairTorrent,9 Freerider,1</h3></center>
 <p>Maintaining that train of thought, FairTorrent&rsquo;s altruism is also shown in the heatmap for the environment, pictured in Figure 6. Because FairTorrent does always upload to at least one of the requests that is submitted to it, it is more inclined to upload to a Freerider than BitTorrent because of it&rsquo;s unability to actively choke its peers. This is present in the darker shade present from the FairTorrents to Freerider0 column (in comparison to the column present in the BitTorrent and Freerider environments). Furthermore, because of this lack of active choking and the longer-term approach to tit-for-tat, the unchokes pictured in the figure from FairTorrents to other FairTorrents are not as even or as consistent as the spread between BitTorrents and other BitTorrents seen in Figure 4. This is especially notable in the relationship between FairTorrent1 and FairTorrent2, being substantially lighter than the surrounding squares.</p>
 <center>
-<div><img src="/images/bittorrent/fairtorrent_Freerider.png" />
+<div><img src="http://localhost:4000/images/bittorrent/fairtorrent_Freerider.png" />
 <h3>Figure 6: Heatmap generated by FairTorrent,9 Freerider,1</h3>
 </div>
 </center>
@@ -347,13 +347,13 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <h3>Figure 7: Completion Rounds for FairTorrent,5 BitTorrent,5
 </h3>
 <p>When taking a look at the heatmap of unchokes, featured in Figure 8, it appears that the chart is split up into four quadrants: while the two different types of algorithms do exchange data with each other, it appears to be a much lesser degree than with agents that possess an algorithm of the same type. Like seen earlier, the quadrant of BitTorrents appear to be much more consistent with collaborating with all of the agents of their type, while FairTorrents also do aggressively collaborate with each other, although they do appear to choose random favorites whom they unchoke more often than others.</p>
-<div><center><img src="/images/bittorrent/bittorrent_fairtorrent.png" />
+<div><center><img src="http://localhost:4000/images/bittorrent/bittorrent_fairtorrent.png" />
 <h3>Figure 8: Heatmap generated by FairTorrent,5 BitTorrent,5
 </h3>
 </center></div>
 <p>Due to this similar behavior, but Figure 7 still revealing that FairTorrent relatively consistently beat out BitTorrent in terms of completion time, it was shown that the upload protocol itself was notable: not only in how the peer to which to upload to was chosen, but also in the quantity of blocks that were chosen to be uploaded. This is revealed in Figure 9; while it looks deeply similar to Figure 8 in terms of shape, with both the top-left and bottom-right quadrant being darker than the other two, in Figure 9, the relative darkness of the BitTorrent to BitTorrent squares is much lighter than the FairTorrent to FairTorrent squares. Furthermore, it appears that FairTorrent was indeed more generous than BitTorrent in terms of cross-protocol uploads, given that it appears that the FairTorrent to BitTorrent quadrant appears to be on average darker than the BitTorrent to FairTorrent.</p>
 <center>
-<div><img src="/images/bittorrent/bittorrent_fairtorrent_BLOCKS.png" />
+<div><img src="http://localhost:4000/images/bittorrent/bittorrent_fairtorrent_BLOCKS.png" />
 <h3>Figure 9: Heatmap for Blocks Exchanged by FairTorrent,5 BitTorrent,5
 </h3></div>
 </center>
@@ -364,7 +364,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <h2>Rationale</h2>
 <p>Based off the results, FairTorrent appears to be a more efficient method of implementing tit-for-tat in terms of working in swarms and functioning against Freeriders. However, there is a question regarding whether or not there is a simpler way to break the robustness of tit-for-tat. For the final section of this paper, a strategy will be implemented that will intentionally attempt to mirror the tit-for-tat in its opposite. This method will be theoretically touched on and then empirically explored, and its related automata is pictured as the following:</p>
 <center>
-<div><img style="width: 20rem;" src="/images/bittorrent/dfa2.png" />
+<div><img style="width: 20rem;" src="http://localhost:4000/images/bittorrent/dfa2.png" />
 <h3>Figure 10: Automata for AngwyTorrent
 </h3></div>
 </center>
@@ -459,7 +459,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 </center>
 <p>The heatmap featured in Figure 12, similar to the relationship of FairTorrents to other FairTorrents in Figure 8, the pairs which feature higher quantities of unchokes appear to be randomly assigned between pairs of AngwyTorrents. It does not appear that AngwyTorrent&rsquo;s presence has not substantially changed the degree of inter-protocol exchanges.</p>
 <center>
-<div><img src="/images/bittorrent/bittorrent_angwytorrent.png" />
+<div><img src="http://localhost:4000/images/bittorrent/bittorrent_angwytorrent.png" />
 <h3>Figure 12: Heatmap generated by AngwyTorrent,5 BitTorrent,5</h3>
 </div>
 </center>
@@ -531,7 +531,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 </center>
 <p>Furthermore, in Figure 14, there is a similar kind of randomness present in the AngwyTorrent to AngwyTorrent quadrant as there is in the the FairTorrent to FairTorrent quadrant. The two other quadrants appear to be relatively lighter than the cross-protocol quadrants present in the other figures in the results as well as Figure 12 specifically, revealing that AngwyTorrent&rsquo;s protocol stratifies the connections between itself and FairTorrent more than AngwyTorrent does with BitTorrent.</p>
 <center>
-<div><img src="/images/bittorrent/fairtorrent_angwytorrent.png" />
+<div><img src="http://localhost:4000/images/bittorrent/fairtorrent_angwytorrent.png" />
 <h3>Figure 14: Heatmap generated by AngwyTorrent,5 FairTorrent,5</h3>
 </div>
 </center>
@@ -576,21 +576,21 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 
 <center>
 <h1>Appendix of Images</h1>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image1.png" alt="Brush Rest with Persian Inscription&nbsp;(front)" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image1.png" alt="Brush Rest with Persian Inscription&nbsp;(front)" /></p>
 <p>Figure 1: Brush Rest with Persian Inscription&nbsp;(front), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711215651&amp;usg=AOvVaw3rx6IEv-lA0OCmXc4EVC72">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image7.png" alt="Brush Rest with Persian Inscription&nbsp;(front calligraphy)" />Figure 2: Brush Rest with Persian Inscription&nbsp;(front calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711216555&amp;usg=AOvVaw3xpCM0Mi0l4HvfTxGOplgv">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image5.png" alt="Brush Rest with Persian Inscription&nbsp;(back)" />Figure 3: Brush Rest with Persian Inscription&nbsp;(back), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711217053&amp;usg=AOvVaw3BJ1vMGPmc2vxb6Dc8J4w_">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image6.png" alt="Brush Rest with Persian Inscription&nbsp;(back calligraphy)" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image7.png" alt="Brush Rest with Persian Inscription&nbsp;(front calligraphy)" />Figure 2: Brush Rest with Persian Inscription&nbsp;(front calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711216555&amp;usg=AOvVaw3xpCM0Mi0l4HvfTxGOplgv">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image5.png" alt="Brush Rest with Persian Inscription&nbsp;(back)" />Figure 3: Brush Rest with Persian Inscription&nbsp;(back), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711217053&amp;usg=AOvVaw3BJ1vMGPmc2vxb6Dc8J4w_">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image6.png" alt="Brush Rest with Persian Inscription&nbsp;(back calligraphy)" /></p>
 <p>Figure 4: Brush Rest with Persian Inscription&nbsp;(back calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711217807&amp;usg=AOvVaw1vLW_3QbmvGam4YuT2H6Ma">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image2.png" alt="Brush Rest with Persian Inscription&nbsp;(bottom)" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image2.png" alt="Brush Rest with Persian Inscription&nbsp;(bottom)" /></p>
 <p>Figure 5: Brush Rest with Persian Inscription&nbsp;(bottom), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711218648&amp;usg=AOvVaw0SbuOcQaIcPemVacLgrhBG">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image3.png" alt="Brush Rest with Persian Inscription&nbsp;(bottom calligraphy)" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image3.png" alt="Brush Rest with Persian Inscription&nbsp;(bottom calligraphy)" /></p>
 <p>Figure 6: Brush Rest with Persian Inscription&nbsp;(bottom calligraphy), early 16th century<br /><a href="https://www.google.com/url?q=https://www.metmuseum.org/art/collection/search/42528&amp;sa=D&amp;source=editors&amp;ust=1660623711219302&amp;usg=AOvVaw1gADjnx42wWKTXObrjgwdZ">https://www.metmuseum.org/art/collection/search/42528</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image8.png" alt="Shah Mosque, Inscription on the wall of the Sheikh Lotf Allah Mosque" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image8.png" alt="Shah Mosque, Inscription on the wall of the Sheikh Lotf Allah Mosque" /></p>
 <p>Figure 7: Shah Mosque, Inscription on the wall of the Sheikh Lotf Allah Mosque, Isfahan, Iran, 1611-1629<br /><a href="https://www.google.com/url?q=https://en.wikipedia.org/wiki/File:Sheikh_Lotf_Allah_mosque_-_harem_wall_detail.jpg&amp;sa=D&amp;source=editors&amp;ust=1660623711220050&amp;usg=AOvVaw3ar3RVpnQDxSM-EiZe3NS6">https://en.wikipedia.org/wiki/File:Sheikh_Lotf_Allah_mosque_-_harem_wall_detail.jpg</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image9.png" alt="Shah Mosque, a 3D panorama of interior of the main prayer hall" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image9.png" alt="Shah Mosque, a 3D panorama of interior of the main prayer hall" /></p>
 <p>Figure 8: Shah Mosque, a 3D panorama of interior of the main prayer hall, Isfahan, Iran, 1611-1629<br /><a href="https://www.google.com/url?q=https://commons.wikimedia.org/wiki/File:Imam_Mosque_3Daa.jpg&amp;sa=D&amp;source=editors&amp;ust=1660623711220659&amp;usg=AOvVaw2Obi5d55gJ4cpiFLMbWtpO">https://commons.wikimedia.org/wiki/File:Imam_Mosque_3Daa.jpg</a>&nbsp;</p>
-<p><img style="width: 50%;" title="" src="/images/not-china-china/image4.png" alt="" /></p>
+<p><img style="width: 50%;" title="" src="http://localhost:4000/images/not-china-china/image4.png" alt="" /></p>
 <p>Figure 9: Bowl with Dragons, Peony Scrolls, and Band of Lingzhi Mushrooms, 1522&ndash;1566<br /><a href="https://www.google.com/url?q=https://www.artic.edu/artworks/21282/bowl-with-dragons-peony-scrolls-and-band-of-lingzhi-mushrooms&amp;sa=D&amp;source=editors&amp;ust=1660623711221483&amp;usg=AOvVaw1nvVZ1w7GGraEdYK88lUqT">https://www.artic.edu/artworks/21282/bowl-with-dragons-peony-scrolls-and-band-of-lingzhi-mushrooms</a></p>
 </center>
 <hr style="page-break-before: always; display: none;" />
@@ -739,27 +739,27 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 
 <center>
 <h1>Works Cited</h1>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image1.png" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image1.png" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
 <p>Figure 1: White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image3.png" alt="White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image3.png" alt="White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co." /></p>
 <p>Figure 2: White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image2.jpg" alt="Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image2.jpg" alt="Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888." /></p>
 <p>Figure 3: Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image5.png" alt="Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image5.png" alt="Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889." /></p>
 <p>Figure 4: Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image4.png" alt="&ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image4.png" alt="&ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives." /></p>
 <p>Figure 5: &ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives.</p>
-<p><img style="width: 70%;" title="Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York." src="/images/washington-square/image7.png" alt="" /></p>
+<p><img style="width: 70%;" title="Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York." src="http://localhost:4000/images/washington-square/image7.png" alt="" /></p>
 <p>Figure 6: Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image6.jpg" alt="McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image6.jpg" alt="McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021." /></p>
 <p>Figure 7: McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image9.png" alt="Elmer Holmes Bobst Library, April 22, 2011." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image9.png" alt="Elmer Holmes Bobst Library, April 22, 2011." /></p>
 <p>Figure 8: Elmer Holmes Bobst Library, April 22, 2011. <a href="https://www.google.com/url?q=https://www.flickr.com/photos/sbc9/5850770567&amp;sa=D&amp;source=editors&amp;ust=1660662077676147&amp;usg=AOvVaw2iKy_BCoFMr5733NrUu2ZA">https://www.flickr.com/photos/sbc9/5850770567</a></p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image8.jpg" alt="Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image8.jpg" alt="Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021." /></p>
 <p>Figure 9: Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image11.png" alt="Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image11.png" alt="Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021." /></p>
 <p>Figure 10: Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021. <a href="https://www.google.com/url?q=https://www.dailymail.co.uk/news/article-9582281/New-Yorks-Washington-Square-Park-resembles-dirty-garbage-dump-morning-huge-party.html&amp;sa=D&amp;source=editors&amp;ust=1660662077677204&amp;usg=AOvVaw1RiqydoFjkp8VBNMGvabiQ">https://www.dailymail.co.uk/news/article-9582281/New-Yorks-Washington-Square-Park-resembles-dirty-garbage-dump-morning-huge-party.html</a>&nbsp;</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image10.png" alt="Plaque on Park Bench Advertising Living Memorials. April 20, 2021." /></p>
+<p><img style="width: 70%;" title="" src="http://localhost:4000/images/washington-square/image10.png" alt="Plaque on Park Bench Advertising Living Memorials. April 20, 2021." /></p>
 <p>Figure 11: Plaque on Park Bench Advertising Living Memorials. April 20, 2021.</p>
 </center>
 <h1>Bibliography</h1>
