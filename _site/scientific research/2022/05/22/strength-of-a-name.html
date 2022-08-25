@@ -19,7 +19,7 @@
 
 
   <!-- CSS -->
-  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
   
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface" />
@@ -56,7 +56,7 @@
 
 <nav id="sidebar-nav-links">
   <a class="page-link "
-href="http://localhost:4000/">Home</a>
+href="/">Home</a>
   
 
   
@@ -212,7 +212,7 @@ href="http://localhost:4000/">Home</a>
 
 <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<p>The original paper can be found <a target="_blank" href="http://localhost:4000/images/strength-of-a-name/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/nyc-realestate">here</a>.</p>
+<p>The original paper can be found <a target="_blank" href="/images/strength-of-a-name/final_paper.pdf">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/nyc-realestate">here</a>.</p>
 
 <h1 id="sec:intro">Introduction</h1>
 <p>In 2022, the value of the NYC housing market was estimated at $3.51 trillion, and it appears that the market is not expected to stop growing anytime soon. The idea that real estate is a wise investment is a heavily debated topic, especially as young people grow more and more hesitant towards making such a purchase; but if one is to make it, it should be a wise one that functions more like an investment.</p>
@@ -251,7 +251,7 @@ p(V) = \prod_{V_i \in V} p(V_i | \operatorname{pa}_{\mathcal{G}}(V_i)),\end{alig
 <p>As described in section ACE &amp; Backdoor Adjustment, I will use backdoor adjustment in order to calculate the relationship between my treatment and outcome variable. The code for backdoor adjustment was written up in Python3 and featured heavy use of <code>statsmodels.api}</code> in order to calculate a Gaussian model for the relationship between my treatment variables and the outcome. The code for this is featured in <code>backdoor.py</code>, in the function <code>backdoor_adjustment</code>. In order to compute the corresponding confidence intervals, 200 bootstraps were features in the <code>compute_confidence_intervals_backdoor</code> function, with an alpha value of 0.05 in order to assess the variability of the distribution of results found from the backdoor adjustment processing. This process was run in a for loop for each my treatment variables, adjusting the adjustment set as needed.</p>
 <h1 id="sec:results">Results</h1>
 <p>Having run a Greedy Equivalence Search in Tetrad, the graph featured in Figure 1 was found. This graph, while complex, can be used to find the backdoor adjustment set by grabbing all of the parents of the outcome variable, with the exception of the treatment variable being tested, whether it be <strong>BRONX</strong>, <strong>BROOKLYN</strong>, <strong>MANHATTAN</strong>, <strong>STATEN_ISLAND</strong>, and <strong>QUEENS</strong> in a given iteration.</p>
-<center><div class="figure"><img style="width: 70%" src="http://localhost:4000/images/strength-of-a-name/graphviz.png" alt="Graph found from Greedy Equivalence Search" /><h3>Figure 1</h3></div></center>
+<center><div class="figure"><img style="width: 70%" src="/images/strength-of-a-name/graphviz.png" alt="Graph found from Greedy Equivalence Search" /><h3>Figure 1</h3></div></center>
 <p>Given this graph, the parents and children of the <strong>SALE_PRICE</strong>– with the exception of the treatment variable being tested– will be used as the backdoor adjustment set for each of the treatment variables. This means that four of the boroughs will be included in the backdoor adjustment set, alongside <strong>PERCENT_WHITE</strong> and <strong>POPULATION_DENSITY</strong> Furthermore, the data yielding from the backdoor adjustment processes featured in <code>backdoor.py</code>, is presented in Figure 4.</p>
 <h3>Figure 2</h3>
 <table><thead><tr class="header"><th align="left">Treatment</th><th align="left">Average Causal Effect</th><th align="left">Confidence Interval</th></tr></thead><tbody><tr class="odd"><td align="left">BROOKLYN</td><td align="left">-1759368.766</td><td align="left">(-2204619.097, -1350677.114)</td></tr><tr class="even"><td align="left">STATEN_ISLAND</td><td align="left">-3242318.034</td><td align="left">(-3849001.805, -2750577.017)</td></tr><tr class="odd"><td align="left">BRONX</td><td align="left">-2124969.992</td><td align="left">(-2517757.840, -1777306.324)</td></tr><tr class="even"><td align="left">QUEENS</td><td align="left">-2376241.155</td><td align="left">(-2856924.173, -1857450.184)</td></tr><tr class="odd"><td align="left">MANHATTAN</td><td align="left">12704278.334</td><td align="left">(10508549.500, 15480349.762)</td></tr></tbody></table>
