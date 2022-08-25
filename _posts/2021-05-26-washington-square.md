@@ -61,7 +61,7 @@ categories:
 <hr style="page-break-before: always; display: none;" />
 <center>
 <h1>Works Cited</h1>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image1.png" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
+<p><img style="width: 70%;" title="" src="images/washington-square/image1.png" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
 <p>Figure 1: White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC</p>
 <p><img style="width: 70%;" title="" src="/images/washington-square/image3.png" alt="White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co." /></p>
 <p>Figure 2: White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co.</p>
