@@ -7,12 +7,12 @@ layout: default
   {% include pagination-newer.html %}
   {{ content }}
   <div class="homecontent">
-    <div class="avatar" style="background-image: {{ '{{ site.data.profile.image }}' | relative_url }}"></div>
+    <div class="avatar" style="background-image: url({{ site.data.profile.image }})"></div>
     <div class="details">
       <h1 class="site-title">{{ site.data.profile.name }}</h1>
       <p class="lead">{{ site.description }}</p>
       <p><i class="fas fa-envelope"></i> <a href="mailto:{{ site.data.profile.social.email }}">{{ site.data.profile.social.email }}</a><br>
-        <i class="fa-solid fa-file"></i> <a target="_blank" href="{{ '/images/victoriamichalska_resume.pdf' | relative_url }}">Find my resume here</a><br>
+        <i class="fa-solid fa-file"></i> <a target="_blank" href="\images\victoriamichalska_resume.pdf">Find my resume here</a><br>
         <i class="fa-brands fa-github"></i> <a href="https://github.com/{{ site.data.profile.social.github }}" target="_blank">{{ site.data.profile.social.github }}</a><br>
         <i class='fas fa-map-marker-alt'></i> {{ site.data.profile.location }}
       </p>
