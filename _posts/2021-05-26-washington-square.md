@@ -61,27 +61,27 @@ categories:
 <hr style="page-break-before: always; display: none;" />
 <center>
 <h1>Works Cited</h1>
-<p><img style="width: 70%;" title="" src="images/washington-square/image1.png" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image1.png' | relative_url }}" alt="White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC" /></p>
 <p>Figure 1: White, Stanford. Original Washington Square Arch. 1889, The Dunne Archives, LLC</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image3.png" alt="White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image3.png' | relative_url }}" alt="White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co." /></p>
 <p>Figure 2: White, Stanford. Marble Washington Square Arch. 1900, Detroit Publishing Co.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image2.jpg" alt="Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image2.jpg' | relative_url }}" alt="Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888." /></p>
 <p>Figure 3: Turini, Giuseppe. Statue of Giuseppe Garibaldi. 1888.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image5.png" alt="Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image5.png' | relative_url }}" alt="Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889." /></p>
 <p>Figure 4: Ward, John Quincy Adams. Bust of Alexander Lyman Holley. 1889.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image4.png" alt="&ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image4.png' | relative_url }}" alt="&ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives." /></p>
 <p>Figure 5: &ldquo;Cars, Washington Square Park, Aerial View,&rdquo; circa 1960-69, Washington Square Park and Washington Square Area Image Collection, NYU Bobst Library Archives.</p>
-<p><img style="width: 70%;" title="Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York." src="/images/washington-square/image7.png" alt="" /></p>
+<p><img style="width: 70%;" title="Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York." src="{{ '/images/washington-square/image7.png' | relative_url }}" alt="" /></p>
 <p>Figure 6: Flagpole Under Arch as seen from Fifth Avenue, 1920. Art Commission of the City of New York.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image6.jpg" alt="McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image6.jpg' | relative_url }}" alt="McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021." /></p>
 <p>Figure 7: McKim, Mead, and White. World War I Memorial Flagstaff. April 20, 2021.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image9.png" alt="Elmer Holmes Bobst Library, April 22, 2011." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image9.png' | relative_url }}" alt="Elmer Holmes Bobst Library, April 22, 2011." /></p>
 <p>Figure 8: Elmer Holmes Bobst Library, April 22, 2011. <a href="https://www.google.com/url?q=https://www.flickr.com/photos/sbc9/5850770567&amp;sa=D&amp;source=editors&amp;ust=1660662077676147&amp;usg=AOvVaw2iKy_BCoFMr5733NrUu2ZA">https://www.flickr.com/photos/sbc9/5850770567</a></p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image8.jpg" alt="Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image8.jpg' | relative_url }}" alt="Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021." /></p>
 <p>Figure 9: Memorial for Black Victims of Police Brutality in front of Tisch Fountain. April 20th, 2021.</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image11.png" alt="Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image11.png' | relative_url }}" alt="Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021." /></p>
 <p>Figure 10: Means, Curtis. Washington Square the morning after people celebrate the city&rsquo;s return to near-normality after the COVID-19 Pandemic. May 15, 2021. <a href="https://www.google.com/url?q=https://www.dailymail.co.uk/news/article-9582281/New-Yorks-Washington-Square-Park-resembles-dirty-garbage-dump-morning-huge-party.html&amp;sa=D&amp;source=editors&amp;ust=1660662077677204&amp;usg=AOvVaw1RiqydoFjkp8VBNMGvabiQ">https://www.dailymail.co.uk/news/article-9582281/New-Yorks-Washington-Square-Park-resembles-dirty-garbage-dump-morning-huge-party.html</a>&nbsp;</p>
-<p><img style="width: 70%;" title="" src="/images/washington-square/image10.png" alt="Plaque on Park Bench Advertising Living Memorials. April 20, 2021." /></p>
+<p><img style="width: 70%;" title="" src="{{ '/images/washington-square/image10.png' | relative_url }}" alt="Plaque on Park Bench Advertising Living Memorials. April 20, 2021." /></p>
 <p>Figure 11: Plaque on Park Bench Advertising Living Memorials. April 20, 2021.</p>
 </center>
 <h1>Bibliography</h1>
