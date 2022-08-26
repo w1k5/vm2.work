@@ -34,11 +34,12 @@ layout: default
       <div class="slide-contents">
         {% for specific in section.entries %}
         <div>
-          <a href="{{specific.url}}"><h1 style="margin-bottom: 0;">{{specific.title}}</h1></a>
+          <a href="{{ specific.url | relative_url }}"><h1 style="margin-bottom: 0;">{{specific.title}}</h1></a>
           <p>{{ specific.date | date: "%b %Y" }}<br>
           {{specific.description}}</p>
         </div>
         {% endfor %}
+
         {% if section.id == "home" %}
         <div style="text-align: center;">
           <h1>{{ section.greeting }}</h1>
