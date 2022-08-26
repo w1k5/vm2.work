@@ -1,14 +1,6 @@
-# Hydeout
-
-Hydeout updates the original [Hyde](https://github.com/poole/hyde)
-theme for [Jekyll](http://jekyllrb.com) 3.x and 4.x and adds new functionality.
-
-![Desktop](/_screenshots/1.png?raw=true)
-<img alt="Mobile home page" src="/_screenshots/2.png?raw=true" width="300px" />
-<img alt="Mobile post page" src="/_screenshots/3.png?raw=true" width="300px" />
+# Hydeout - Work Portfolio
 
 ### Usage
-
 Hydeout is available as the `jekyll-theme-hydeout` Ruby Gem.
 Add `gem "jekyll-theme-hydeout", "~> 4.1"` to your Gemfile and run
 `bundle install`.
