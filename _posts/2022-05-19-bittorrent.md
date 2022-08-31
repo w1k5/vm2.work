@@ -4,7 +4,7 @@ title: Tit-for-tat's Lack of Robustness Against Strategic Clients (Again)
 excerpt_separator:  <!--more-->
 description: Empirical study relying on a theoretical approach towards demonstrating tit-for-tat's lack of robustness against strategic clients-- simply, highlighting the differences between FairTorrent and BitTorrent.
 categories:
-  - Scientific Research
+  - Academic Research
 ---
 The original paper can be found <a target="_blank" href="{{ '/images/bittorrent/final_paper.pdf' | relative_url }}">here</a> and the associated repository can be found <a target="_blank" href="https://github.com/w1k5/proving-bittorrent">here</a>.
 

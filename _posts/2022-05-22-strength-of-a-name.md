@@ -5,7 +5,7 @@ date: May 22, 2022
 excerpt_separator: <!--more-->
 description: Empirical study focusing on the causal analysis of the relationship between property sale prices and the location of a property, accounting for the majority of the advantages relating to a given borough, quantifying the value of a borough.
 categories:
-  - Scientific Research
+  - Academic Research
 ---
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

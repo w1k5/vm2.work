@@ -4,7 +4,7 @@ title: Not-China China
 excerpt_separator:  <!--more-->
 description: In Jingdezhen, Jiangxi province (江西省, 景德鎮), a paint brushrest was found at some point in the 20th century. This research paper focuses on the visual manifestation of cultural exchange in this brushrest, functioning as a tangible reminder of the complexities of any nation’s history.
 categories:
-  - Historical Research
+  - Academic Research
 ---
 <h1>INTRODUCTION</h1>
 <p>In Jingdezhen, Jiangxi province (江西省, 景德鎮), a paint brush rest (Figures 1 - 6)&nbsp;was found at some point in the 20th century. This is one of many identical brush rests found in the area, but these items are remarkably unique from most popular pieces of blue-and-white porcelain: different in use, form, and style than typical blue-and-white pieces seen in the art market today and popular in contemporary media, but also potentially the most potent and reflective of blue-and-white&rsquo;s beginnings as a medium and its historical significance.</p><!--more-->

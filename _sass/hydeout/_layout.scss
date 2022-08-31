@@ -42,7 +42,7 @@ body {
 
 #sidebar {
   flex: 0 0 auto;
-  padding: $section-spacing;
+  padding: 1em;
 
   .site-title {
     font-weight: normal;
@@ -315,13 +315,13 @@ body {
     height: 0px;
     transition: top 5s ease-in;
     overflow-y: hidden;
-    top: 7rem;
+    top: 5.8rem;
     left: 0px;
   }
   .nav-btn {
     display: inline-block;
     position: absolute;
-    right: $section-spacing;
+    right: 1em;
   }
   .nav-btn > label {
     display: inline-block;
