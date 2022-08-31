@@ -305,7 +305,7 @@ body {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: $large-breakpoint) {
   #sidebar-nav-links {
     position: absolute;
     display: block;
@@ -313,7 +313,6 @@ body {
     background-color: $sidebar-bg-color;
     z-index: 10;
     height: 0px;
-    transition: top 5s ease-in;
     overflow-y: hidden;
     top: 5.8rem;
     left: 0px;
@@ -359,6 +358,12 @@ body {
   #nav-check:checked ~ #sidebar-nav-links {
     height: auto;
     overflow-y: auto;
+  }
+}
+
+@media (min-width: $medium-breakpoint) {
+  #sidebar-nav-links {
+    top: 7.5rem;
   }
 }
 
