@@ -1,0 +1,146 @@
+{
+  "selectedTemplate": 2,
+  "basics": {
+    "name": "Victoria Michalska",
+    "phone": "3473036373",
+    "website": "https://vm2.work/",
+    "location": {
+      "address": "New York, NY"
+    },
+    "email": "vmichalska00@gmail.com"
+  },
+  "education": [
+    {
+      "institution": "Williams College",
+      "location": "Williamstown, MA",
+      "area": "Computer Science and BA in Art History & Practice",
+      "startDate": "September 2018",
+      "endDate": "June 2022",
+      "gpa": "3.4",
+      "studyType": "BS"
+    }
+  ],
+  "work": [
+    {
+      "location": "New York, NY",
+      "website": "",
+      "startDate": "February 2023",
+      "highlights": [
+        "Implemented clean and maintainable code following design patterns and coding standards.",
+        "Developed proficiency in using Aeron, an open-source messaging system based on OSI Layer 4 (Transport) Services, to facilitate efficient communication between distributed components.",
+        "Gained expertise in working with Adaptive's proprietary software, Hydra, which is built on top of Aeron and tailored for high-frequency financial trading platforms."
+      ],
+      "company": "Adaptive Financial Consulting",
+      "position": "Junior Developer"
+    },
+    {
+      "location": "New York, NY",
+      "website": "",
+      "startDate": "June 2021",
+      "endDate": "August 2021",
+      "highlights": [
+        "Used Airtable’s API to create scripts in Java to organize Care.com’s Iterable campaigns",
+        "Analyzed trends in audience retention for Care.com’s email marketing strategies using Amplitude",
+        "Planned and organized A/B tests for marketing campaigns in Jira"
+      ],
+      "company": "IAC Fellow at Care.com",
+      "position": "Data Science in Marketing Intern"
+    },
+    {
+      "highlights": [
+        "Created and maintained Shopify blog",
+        "Constructed automated mailing system in Klaviyo",
+        "Designed advertisements for campaigns and products using Photoshop.",
+        "Analyzed and executed the production of campaign materials",
+        "Assessed the success of media campaigns through marketing analytics"
+      ],
+      "company": "Article22",
+      "position": "Front-End Web Development and Wholesale Marketing Intern",
+      "location": "Brooklyn, NY",
+      "startDate": "July 2019",
+      "endDate": "August 2019"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming Languages",
+      "level": "",
+      "keywords": [
+        "Java",
+        "Python",
+        "C",
+        "HTML/CSS",
+        "Scala"
+      ]
+    },
+    {
+      "keywords": [
+        "Adobe Photoshop",
+        "Procreate",
+        "Sketch"
+      ],
+      "name": "Visual Editing Software"
+    },
+    {
+      "keywords": [
+        "English",
+        "Polish",
+        "Latin"
+      ],
+      "name": "Formal Language Training"
+    }
+  ],
+  "projects": [
+    {
+      "url": "",
+      "keywords": [
+        "Python"
+      ],
+      "name": "Tit-for-tat's Lack of Robustness Against Strategic Clients (Again) - May 2022",
+      "description": "Empirical study relying on a theoretical approach towards demonstrating tit-for-tat's lack of robustness against strategic clients-- simply, highlighting the differences between FairTorrent and BitTorrent."
+    },
+    {
+      "keywords": [
+        "Python",
+        "Pandas"
+      ],
+      "name": "New York City's Real Estate & the Strength of a Name - May 2022",
+      "description": "Empirical study focusing on the causal analysis of the relationship between property sale prices and the location of a property, accounting for the majority of the advantages relating to a given borough, quantifying the value of a borough."
+    },
+    {
+      "keywords": [
+        "Adobe Photoshop",
+        "Illustrator"
+      ],
+      "name": "Freelance Graphic Design",
+      "description": "Creating logos and graphics for small businesses and sports teams."
+    },
+    {
+      "keywords": [
+        "Jekyll for Ruby",
+        "HTML/CSS",
+        "Liquid"
+      ],
+      "name": "Freelance Web Development",
+      "description": "Designing and executing websites for businesses and personal blogs."
+    },
+    {
+      "keywords": [
+        ""
+      ],
+      "name": "Williams Record Op-Ed Writer",
+      "description": "Writing op-eds for the college paper regarding campus life."
+    }
+  ],
+  "awards": [],
+  "headings": {},
+  "sections": [
+    "templates",
+    "profile",
+    "education",
+    "work",
+    "skills",
+    "projects",
+    "awards"
+  ]
+}

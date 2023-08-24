@@ -25,28 +25,12 @@ experience: # Remove for hiding the experience section
     experience: Begin education at Williams College
   - start: June 2018
     experience: Graduate from The Brooklyn Latin School, 3.85 GPA
-interests: # Remove for hiding the interests section
-  - Interest 1
-  - Interest 2
-skills: # Remove for hiding the skills section
-  - skill: HTML5 & CSS
-    value: 85  # Percent value
 social:
   email: vmichalska00@gmail.com
-  orcid:
-  scholar:
-  publons:
-  research_gate:
-  dblp:  # Full URL
-  semantic_scholar:  # Full URL
   linkedin:  # Full URL
   github: W1K5
   gitlab:
-  bitbucket: 
-  google_plus:
   twitter:
   youtube:
   facebook:
   instagram:
-awards: # Remove for hiding the awards section
-  - "This is an award I got"
