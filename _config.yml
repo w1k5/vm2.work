@@ -5,7 +5,7 @@ highlighter:      rouge
 # Setup
 title:            vm2.work
 tagline:          'Feverish typing...'
-description:      'Recent graduate from Williams College with a double major in Computer Science and Art History'
+description:      'Software Engineer from Williams College with a double major in Computer Science and Art History'
                   # the optional subpath of your site, e.g. "/blog"
                   # NB: This applies to all pages in your Jekyll site.
                   # If you want to move just the blog index pages but keep
