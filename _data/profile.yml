@@ -3,18 +3,27 @@ name: Victoria Michalska
 location: New York, NY
 description: creator of the Grape-Academic-Theme! Grape-Academic-Theme is a modification of the Grape-Theme by naye0ng, making it more suitable as an academic portfolio.
 experience: # Remove for hiding the experience section
+  - start: February 2023
+    experience: Java Developer, Adaptive Financial Consulting
+    details:
+      - Implemented clean and maintainable code following design patterns and coding standards
+      - Developed proficiency in using Aeron, an open-source messaging system based on OSI Layer 4 (Transport) Services, to facilitate efficient communication between distributed components
+      - Gained expertise in working with Adaptive’s proprietary software, Hydra, which is built on top of Aeron and tailored for high-frequency financial trading platforms
+      - Designed and implemented a distributed, modular, and scalable architecture for a Java-based distributed system, including the design and implementation of an abstraction layer inspired by entity component systems
+      - Utilized the observer pattern and a CQRS model to ensure long-term maintainability and modularity
+
   - start: June 2022
-    experience : Graduate from Williams College
+    experience: Graduate from Williams College
     details:
       - Double major in Computer Science/Art History, 3.4 GPA
   - start: Summer 2021
-    experience : Data Analytics/Marketing Intern, IAC
+    experience: Data Analytics/Marketing Intern, IAC
     details:
       - Analyzed trends in audience retention for Care.com’s email marketing strategies using Amplitude
       - Used Airtable’s API to create scripts in Java to organize Care.com’s Iterable campaigns
       - Planned and organized A/B tests for marketing campaigns in Jira
   - start: Summer 2019
-    experience : Front-end Dev and Marketing Assistant, Article22
+    experience: Front-end Dev and Marketing Assistant, Article22
     details:
       - Created and maintained Shopify blog
       - Constructed automated mailing system in Klaviyo
