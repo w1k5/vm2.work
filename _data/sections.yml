@@ -13,7 +13,7 @@
 - name: Home
   id: home
   greeting: Welcome!
-  info: I am Victoria Michalska and this is my online portfolio.<br>This site was made by me using the static site generator, Jekyll, to present samples of my research work in computer science and in art history, which can be found in the accompanying tabs above. Click the button below to be shown a timeline of my past work history.
+  info: I am Victoria Michalska and this is my online portfolio.<br>This site presents samples of my written work in computer science and in art history, which can be found in the accompanying tabs above. Click the button below to be shown a timeline of my past work history.
   button: Work Experience
   button-link: /past-work-experience.html
 
