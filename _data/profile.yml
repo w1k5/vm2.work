@@ -1,42 +1,43 @@
 image: images/me.png
 name: Victoria Michalska
 location: New York, NY
-description: creator of the Grape-Academic-Theme! Grape-Academic-Theme is a modification of the Grape-Theme by naye0ng, making it more suitable as an academic portfolio.
+description: Software Engineer specializing in high-performance financial systems and distributed computing. Experienced in building scalable trading platforms and optimizing system performance for enterprise applications.
 experience: # Remove for hiding the experience section
+  - start: February 2025
+    experience: Scala Developer, Trumid Financial LLC
+
   - start: February 2023
     experience: Java Developer, Adaptive Financial Consulting
     details:
-      - Implemented clean and maintainable code following design patterns and coding standards
-      - Developed proficiency in using Aeron, an open-source messaging system based on OSI Layer 4 (Transport) Services, to facilitate efficient communication between distributed components
-      - Gained expertise in working with Adaptive’s proprietary software, Hydra, which is built on top of Aeron and tailored for high-frequency financial trading platforms
-      - Designed and implemented a distributed, modular, and scalable architecture for a Java-based distributed system, including the design and implementation of an abstraction layer inspired by entity component systems
-      - Utilized the observer pattern and a CQRS model to ensure long-term maintainability and modularity
+      - Developed and refined APIs for event-driven backend components, enhancing high-speed trading algorithms within Front Office financial platforms
+      - Collaborated on implementing an Aeron cluster, enhancing connectivity between legacy systems for high-profile financial institutions requiring Level 2 security clearance
+      - Created and managed APIs for Spring JPA repositories, ensuring efficient and reliable data access and manipulation
+      - Maintained Kafka consumers and producers to support real-time data processing and integration across various services
+      - Reviewed team code, providing feedback for adherence to best practices and maintaining quality standards in secure financial environments
 
-  - start: June 2022
-    experience: Graduate from Williams College
+  - start: June 2021
+    experience: Marketing Intern, IAC Fellow at Care.com
     details:
-      - Double major in Computer Science/Art History, 3.4 GPA
-  - start: Summer 2021
-    experience: Data Analytics/Marketing Intern, IAC
-    details:
-      - Analyzed trends in audience retention for Care.com’s email marketing strategies using Amplitude
-      - Used Airtable’s API to create scripts in Java to organize Care.com’s Iterable campaigns
+      - Used Airtable's API to create scripts in Java to organize Care.com's Iterable campaigns
+      - Analyzed trends in audience retention for Care.com's email marketing strategies using Amplitude
       - Planned and organized A/B tests for marketing campaigns in Jira
-  - start: Summer 2019
-    experience: Front-end Dev and Marketing Assistant, Article22
+
+  - start: July 2019
+    experience: Wholesale Marketing Intern, Article22
     details:
       - Created and maintained Shopify blog
       - Constructed automated mailing system in Klaviyo
       - Designed advertisements for campaigns and products using Photoshop
       - Analyzed and executed the production of campaign materials
       - Assessed the success of media campaigns through marketing analytics
+
   - start: September 2018
     experience: Begin education at Williams College
   - start: June 2018
     experience: Graduate from The Brooklyn Latin School, 3.85 GPA
 social:
   email: vmichalska00@gmail.com
-  linkedin:  # Full URL
+  linkedin: https://www.linkedin.com/in/victoria-michalska/
   github: W1K5
   gitlab:
   twitter:
